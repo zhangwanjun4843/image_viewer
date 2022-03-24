@@ -19,12 +19,18 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="ui">
+   <property name="minimumSize">
+    <size>
+     <width>300</width>
+     <height>200</height>
+    </size>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>TextLabel</string>
+       <string>Enter Image path</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -34,7 +40,11 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="placeholderText">
+         <string>Enter Image path</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton">
