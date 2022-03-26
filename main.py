@@ -40,5 +40,5 @@ if __name__ == '__main__':
     apply_stylesheet(app, theme='dark_teal.xml')
 
 
-    window.show()
+    window.showMaximized()
     app.exec()
