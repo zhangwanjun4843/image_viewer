@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>737</width>
-    <height>478</height>
+    <width>473</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,14 +28,7 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Enter Image path</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_2"/>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
