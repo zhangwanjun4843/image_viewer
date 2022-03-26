@@ -1,3 +1,5 @@
+# https://github.com/marcel-goldschen-ohm/PyQtImageViewer
+
 import os.path, sys
 
 from PySide6.QtCore import Qt, QRectF, Signal, QMargins
