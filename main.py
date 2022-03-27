@@ -24,10 +24,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.ui)
 
     def show_image(self):
-        self.ui.imageViewer.loadImageFromFile()
+        self.ui.imageViewer.load_image_from_file()
 
     def flip_image(self):
-        self.ui.imageViewer.scale(-1, 1)
+        self.ui.imageViewer.flip_image()
 
 if __name__ == '__main__':
 

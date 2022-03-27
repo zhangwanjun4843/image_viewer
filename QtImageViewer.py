@@ -28,6 +28,8 @@ class QtImageViewer(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self.is_flipped = False
+
         self.zoomStack = []
 
         self.canZoom = True
@@ -56,7 +58,7 @@ class QtImageViewer(QGraphicsView):
         return None
 
     # set an image to be displayed on the image viewer
-    def setImage(self, image):
+    def set_image(self, image):
         # convert the iamge to pixmap
         if type(image) is QPixmap:
             pixmap = image 
@@ -76,12 +78,15 @@ class QtImageViewer(QGraphicsView):
         self.updateViewer()
 
     # load an image from a filepath
-    def loadImageFromFile(self, fileName=""):
+    def load_image_from_file(self, fileName=""):
         if len(fileName) == 0:
             fileName, dummy = QFileDialog.getOpenFileName(self, "Open image file.")
         if len(fileName) and os.path.isfile(fileName):
             image = QImage(fileName)
-            self.setImage(image)
+            self.set_image(image)
+
+        if self.is_flipped:
+            self.flip_image()
 
     # update the zoom of the image viewer
     def updateViewer(self):
@@ -97,13 +102,16 @@ class QtImageViewer(QGraphicsView):
             self.zoomStack = []
             self.fitInView(self.sceneRect(), self.aspectRatioMode)
 
+    def flip_image(self):
+        self.scale(-1, 1)
+        self.is_flipped = not self.is_flipped
+
     # Events
 
     def resizeEvent(self, event):
     #     if self.canZoom:
     #         self.zoomStack = []
         self.updateViewer()
-
 
 
     def mousePressEvent(self, event):
