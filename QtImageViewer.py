@@ -1,10 +1,12 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 
+from math import degrees
 import os.path, sys
+from turtle import width
 
-from PySide6.QtCore import Qt, QRectF, Signal, QMargins
-from PySide6.QtGui import QImage, QPixmap, QPainterPath
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog, QApplication, QMainWindow, QVBoxLayout
+from PySide6.QtCore import Qt, QRectF, Signal, QMargins, QPointF, QSizeF, QLineF
+from PySide6.QtGui import QImage, QPixmap, QPainterPath, QPen, QBrush, QTransform
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog, QApplication, QMainWindow, QVBoxLayout, QGraphicsTransform
 from PySide6.QtUiTools import QUiLoader
 
 from qt_material import apply_stylesheet
@@ -29,6 +31,11 @@ class QtImageViewer(QGraphicsView):
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.h11 = 1.0
+        self.h12 = 0
+        self.h21 = 1.0
+        self.h22 = 0
 
         self.zoomStack = []
 
@@ -178,3 +185,12 @@ class QtImageViewer(QGraphicsView):
 
 
         QGraphicsView.mouseDoubleClickEvent(self, event)
+
+    def wheelEvent(self, event):
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+
+        scale_factor = 1.05
+        if event.angleDelta().y() > 0:
+            self.scale(scale_factor, scale_factor)
+        else:
+            self.scale(1.0 / scale_factor, 1.0 /  scale_factor)

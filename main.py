@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, pprint
 
 from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout
 from PySide6.QtUiTools import QUiLoader
@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         self.ui.imageViewer.setStyleSheet("border-width: 0px; border-style: solid")
 
         self.ui.pushButton.clicked.connect(lambda: self.show_image())
+        self.ui.actionSave.triggered.connect(lambda: pprint.pprint())
         
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
         self.setCentralWidget(self.ui)
