@@ -29,6 +29,7 @@ class QtImageViewer(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.is_flipped = False
+        self.is_rotating = False
 
         self.zoomStack = []
 
@@ -106,6 +107,9 @@ class QtImageViewer(QGraphicsView):
         self.scale(-1, 1)
         self.is_flipped = not self.is_flipped
 
+    def toggle_rotating(self):
+        self.is_rotating = not self.is_rotating
+
     # Events
 
     def resizeEvent(self, event):
@@ -155,13 +159,19 @@ class QtImageViewer(QGraphicsView):
         QGraphicsView.mouseDoubleClickEvent(self, event)
 
     def wheelEvent(self, event):
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
-        # print(event.buttons())
+        if self.is_rotating:
+            if event.angleDelta().y() > 0:
+                self.rotate(5)
+            else:
+                self.rotate(-5)
 
-        scale_factor = 1.05
-        if event.angleDelta().y() > 0:
-            self.scale(scale_factor, scale_factor)
         else:
-            self.scale(1.0 / scale_factor, 1.0 /  scale_factor)
-            print(self.scene.width())
+            self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+
+            scale_factor = 1.05
+            if event.angleDelta().y() > 0:
+                self.scale(scale_factor, scale_factor)
+            else:
+                self.scale(1.0 / scale_factor, 1.0 /  scale_factor)
+                print(self.scene.width())

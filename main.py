@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
 
         self.ui.pushButton.clicked.connect(lambda: self.show_image())
         self.ui.pushButton_2.clicked.connect(lambda: self.flip_image())
+        self.ui.pushButton_3.clicked.connect(lambda: self.rotate_image())
 
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
         self.setCentralWidget(self.ui)
@@ -28,6 +29,9 @@ class MainWindow(QMainWindow):
 
     def flip_image(self):
         self.ui.imageViewer.flip_image()
+
+    def rotate_image(self):
+        self.ui.imageViewer.toggle_rotating()
 
 if __name__ == '__main__':
 
