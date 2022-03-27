@@ -1,8 +1,7 @@
 import sys, os, pprint
 
-from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout
+from PySide6.QtWidgets import QMainWindow, QApplication
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtGui import QPixmap
 
 from QtImageViewer import QtImageViewer
 

@@ -1,15 +1,11 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 
-from math import degrees
-import os.path, sys
-from turtle import width
+import os.path
 
-from PySide6.QtCore import Qt, QRectF, Signal, QMargins, QPointF, QSizeF, QLineF
-from PySide6.QtGui import QImage, QPixmap, QPainterPath, QPen, QBrush, QTransform
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog, QApplication, QMainWindow, QVBoxLayout, QGraphicsTransform
-from PySide6.QtUiTools import QUiLoader
+from PySide6.QtCore import Qt, QRectF, Signal
+from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
 
-from qt_material import apply_stylesheet
 
 class QtImageViewer(QGraphicsView):
     leftMouseButtonPressed = Signal(float, float)
@@ -31,11 +27,6 @@ class QtImageViewer(QGraphicsView):
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        self.h11 = 1.0
-        self.h12 = 0
-        self.h21 = 1.0
-        self.h22 = 0
 
         self.zoomStack = []
 
@@ -109,7 +100,10 @@ class QtImageViewer(QGraphicsView):
     # Events
 
     def resizeEvent(self, event):
+    #     if self.canZoom:
+    #         self.zoomStack = []
         self.updateViewer()
+
 
 
     def mousePressEvent(self, event):
@@ -120,14 +114,6 @@ class QtImageViewer(QGraphicsView):
             if self.canPan:
                 self.setDragMode(QGraphicsView.ScrollHandDrag)
             self.leftMouseButtonPressed.emit(scenePos.x(), scenePos.y())
-
-
-        # zoom if the right mouse button has been pressed
-        elif event.button() == Qt.RightButton:
-            if self.canZoom:
-                self.setDragMode(QGraphicsView.RubberBandDrag)
-            self.rightMouseButtonPressed.emit(scenePos.x(), scenePos.y())
-
 
         # send the mouse press event
         QGraphicsView.mousePressEvent(self, event)
@@ -145,37 +131,11 @@ class QtImageViewer(QGraphicsView):
             # send the left mouse button released event
             self.leftMouseButtonReleased.emit(scenePos.x(), scenePos.y())
 
-        # zoom if the right mouse button has been released
-        elif event.button() == Qt.RightButton:
-            if self.canZoom:
-                # get the current view area
-                viewBBox = self.zoomStack[-1] if len(self.zoomStack) else self.sceneRect()
-                
-                # get the selected area realative to the current view area
-                selectionBBox = self.scene.selectionArea().boundingRect().intersected(viewBBox)
-
-                # clear the selction area
-                self.scene.setSelectionArea(QPainterPath())
-
-                # if the selection area is valid and the selection area isnt the view area
-                if selectionBBox.isValid() and (selectionBBox != viewBBox):
-                    # append the selection area to the zoom stack and update the viewer
-                    self.zoomStack.append(selectionBBox)
-                    self.updateViewer()
-
-            # reset the drag mode and send the right mouse button release event
-            self.setDragMode(QGraphicsView.NoDrag)
-            self.rightMouseButtonReleased.emit(scenePos.x(), scenePos.y())
-
 
     def mouseDoubleClickEvent(self, event):
         scenePos = self.mapToScene(event.globalPosition().toPoint())
-
-        if event.button() == Qt.LeftButton:
-            # send the left mouse button double clicked event
-            self.leftMouseButtonDoubleClicked.emit(scenePos.x(), scenePos.y())
         
-        elif event.button() == Qt.RightButton:
+        if event.button() == Qt.RightButton:
             # reset the zoom of the image
             if self.canZoom:
                 self.zoomStack = []
@@ -189,8 +149,11 @@ class QtImageViewer(QGraphicsView):
     def wheelEvent(self, event):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
+        # print(event.buttons())
+
         scale_factor = 1.05
         if event.angleDelta().y() > 0:
             self.scale(scale_factor, scale_factor)
         else:
             self.scale(1.0 / scale_factor, 1.0 /  scale_factor)
+            print(self.scene.width())
