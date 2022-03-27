@@ -29,7 +29,9 @@ class QtImageViewer(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.is_flipped = False
+
         self.is_rotating = False
+        self.rotation = 0
 
         self.zoomStack = []
 
@@ -89,6 +91,12 @@ class QtImageViewer(QGraphicsView):
         if self.is_flipped:
             self.flip_image()
 
+        self.rotate(self.rotation * -1)
+
+        self.zoomStack = []
+        self.updateViewer()
+
+
     # update the zoom of the image viewer
     def updateViewer(self):
         # return if the image viewer isnt currently displaying an image
@@ -113,8 +121,6 @@ class QtImageViewer(QGraphicsView):
     # Events
 
     def resizeEvent(self, event):
-    #     if self.canZoom:
-    #         self.zoomStack = []
         self.updateViewer()
 
 
@@ -161,10 +167,15 @@ class QtImageViewer(QGraphicsView):
     def wheelEvent(self, event):
 
         if self.is_rotating:
+            rotation_step = 5
+
             if event.angleDelta().y() > 0:
-                self.rotate(5)
+                self.rotate(rotation_step)
+                self.rotation += rotation_step
             else:
-                self.rotate(-5)
+                self.rotate(-rotation_step)
+                self.rotation += -rotation_step
+
 
         else:
             self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)

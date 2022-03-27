@@ -1,7 +1,8 @@
-import sys, os, pprint
+import sys
 
 from PySide6.QtWidgets import QMainWindow, QApplication
 from PySide6.QtUiTools import QUiLoader
+from PySide6.QtGui import QKeySequence, QShortcut
 
 from QtImageViewer import QtImageViewer
 
@@ -17,9 +18,9 @@ class MainWindow(QMainWindow):
         self.ui.imageViewer = QtImageViewer()
         self.ui.imageViewer.setStyleSheet("border-width: 0px; border-style: solid")
 
-        self.ui.pushButton.clicked.connect(lambda: self.show_image())
-        self.ui.pushButton_2.clicked.connect(lambda: self.flip_image())
-        self.ui.pushButton_3.clicked.connect(lambda: self.rotate_image())
+        self.ui.open_btn.clicked.connect(lambda: self.show_image())
+        self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
+        self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
 
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
         self.setCentralWidget(self.ui)

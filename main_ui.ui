@@ -30,16 +30,31 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="flip_btn">
         <property name="text">
          <string>Flip</string>
+        </property>
+        <property name="shortcut">
+         <string>F</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="rotate_btn">
         <property name="text">
          <string>Rotate</string>
+        </property>
+        <property name="shortcut">
+         <string>R</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -57,9 +72,12 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="open_btn">
         <property name="text">
          <string>Open Image</string>
+        </property>
+        <property name="shortcut">
+         <string>O</string>
         </property>
        </widget>
       </item>
