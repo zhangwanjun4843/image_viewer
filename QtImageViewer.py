@@ -3,7 +3,7 @@
 import os.path
 
 from PySide6.QtCore import Qt, QRectF, Signal
-from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtGui import QImage, QPixmap, QPainter
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
 
 
@@ -117,6 +117,31 @@ class QtImageViewer(QGraphicsView):
 
     def toggle_rotating(self):
         self.is_rotating = not self.is_rotating
+        
+
+    def reset_rotation(self):
+        # dont touch this it works somehow idk why
+        if self.is_flipped:
+            self.rotate(self.rotation)
+        else:
+            self.rotate(self.rotation * -1)
+        self.rotation = 0
+
+    def render_image(self):
+        if self.is_rotating or self.is_flipped:
+            print("Exporting flippend and/or rotated images isnt't supported yet")
+        else:
+            source_rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+            image = QImage(source_rect.width(), source_rect.height(), QImage.Format.Format_ARGB32_Premultiplied)
+            painter = QPainter(image)
+
+            self.scene.render(painter, image.rect(), source_rect)
+            
+            painter.end()
+
+            image.save("exported.png")
+
+
 
     # Events
 
@@ -154,10 +179,14 @@ class QtImageViewer(QGraphicsView):
         scenePos = self.mapToScene(event.globalPosition().toPoint())
         
         if event.button() == Qt.RightButton:
+            self.reset_rotation()
+
             # reset the zoom of the image
             if self.canZoom:
                 self.zoomStack = []
                 self.updateViewer()
+
+            
 
             self.rightMouseButtonDoubleClicked.emit(scenePos.x(), scenePos.y())
 
@@ -165,16 +194,28 @@ class QtImageViewer(QGraphicsView):
         QGraphicsView.mouseDoubleClickEvent(self, event)
 
     def wheelEvent(self, event):
-
+        # dont touch it it works idk why but it works
         if self.is_rotating:
             rotation_step = 5
 
             if event.angleDelta().y() > 0:
-                self.rotate(rotation_step)
-                self.rotation += rotation_step
+                if self.is_flipped:
+                    self.rotate(-rotation_step)
+                    self.rotation += rotation_step
+                else:
+                    self.rotate(rotation_step)
+                    self.rotation += rotation_step
+
             else:
-                self.rotate(-rotation_step)
-                self.rotation += -rotation_step
+                if self.is_flipped:
+                    self.rotate(rotation_step)
+                    self.rotation += -rotation_step
+                else:
+                    self.rotate(-rotation_step)
+                    self.rotation += -rotation_step
+
+
+                    
 
 
         else:
@@ -185,4 +226,3 @@ class QtImageViewer(QGraphicsView):
                 self.scale(scale_factor, scale_factor)
             else:
                 self.scale(1.0 / scale_factor, 1.0 /  scale_factor)
-                print(self.scene.width())

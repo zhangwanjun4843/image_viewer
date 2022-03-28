@@ -2,8 +2,6 @@ import sys
 
 from PySide6.QtWidgets import QMainWindow, QApplication
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtGui import QKeySequence, QShortcut
-
 from QtImageViewer import QtImageViewer
 
 from qt_material import apply_stylesheet
@@ -21,6 +19,8 @@ class MainWindow(QMainWindow):
         self.ui.open_btn.clicked.connect(lambda: self.show_image())
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
+        self.ui.export_btn.clicked.connect(lambda: self.render_image())
+
 
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
         self.setCentralWidget(self.ui)
@@ -33,6 +33,9 @@ class MainWindow(QMainWindow):
 
     def rotate_image(self):
         self.ui.imageViewer.toggle_rotating()
+
+    def render_image(self):
+        self.ui.imageViewer.render_image()
 
 if __name__ == '__main__':
 
