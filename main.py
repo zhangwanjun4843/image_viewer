@@ -37,8 +37,7 @@ class MainWindow(QMainWindow):
     def render_image(self):
         self.ui.imageViewer.render_image()
 
-if __name__ == '__main__':
-
+def run():
     app = QApplication(sys.argv)
     window = MainWindow()
 
@@ -48,3 +47,6 @@ if __name__ == '__main__':
 
     window.showMaximized()
     app.exec()
+
+if __name__ == '__main__':
+    run()
