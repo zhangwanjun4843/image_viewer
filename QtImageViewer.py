@@ -22,6 +22,7 @@ class QtImageViewer(QGraphicsView):
         self.setScene(self.scene)
 
         self._pixmapHandle = None
+        self.img_path = None
 
         self.aspectRatioMode = Qt.KeepAspectRatio
 
@@ -85,6 +86,7 @@ class QtImageViewer(QGraphicsView):
         if len(fileName) == 0:
             fileName, dummy = QFileDialog.getOpenFileName(self, "Open image file.")
         if len(fileName) and os.path.isfile(fileName):
+            self.img_path = fileName
             image = QImage(fileName)
             self.set_image(image)
 

@@ -13,6 +13,9 @@ class MainWindow(QMainWindow):
         loader = QUiLoader()
         self.ui = loader.load("main_ui.ui", None)
 
+        self.setWindowTitle("Image Viewer")
+
+
         self.ui.imageViewer = QtImageViewer()
         self.ui.imageViewer.setStyleSheet("border-width: 0px; border-style: solid")
 
@@ -21,12 +24,12 @@ class MainWindow(QMainWindow):
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
         self.ui.export_btn.clicked.connect(lambda: self.render_image())
 
-
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
         self.setCentralWidget(self.ui)
 
     def show_image(self):
         self.ui.imageViewer.load_image_from_file()
+        self.setWindowTitle(f"Viewing {self.ui.imageViewer.img_path}")
 
     def flip_image(self):
         self.ui.imageViewer.flip_image()
@@ -41,9 +44,7 @@ def run():
     app = QApplication(sys.argv)
     window = MainWindow()
 
-
     apply_stylesheet(app, theme='dark_teal.xml')
-
 
     window.showMaximized()
     app.exec()
