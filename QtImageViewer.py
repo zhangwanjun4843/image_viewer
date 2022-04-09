@@ -135,8 +135,8 @@ class QtImageViewer(QGraphicsView):
         pixmap = QPixmap(self.viewport().size())
         self.viewport().render(pixmap)
 
-        pixmap.save("test.png")
-    
+        return pixmap
+
     # Events
 
     def resizeEvent(self, event):

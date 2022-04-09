@@ -41,7 +41,8 @@ class MainWindow(QMainWindow):
         self.ui.imageViewer.render_image()
 
     def export_image(self):
-        self.ui.imageViewer.export_image()
+        pixmap = self.ui.imageViewer.export_image()
+        QApplication.clipboard().setPixmap(pixmap)
 
 def run():
     app = QApplication(sys.argv)
