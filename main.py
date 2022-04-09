@@ -22,7 +22,6 @@ class MainWindow(QMainWindow):
         self.ui.open_btn.clicked.connect(lambda: self.show_image())
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
-        self.ui.export_btn.clicked.connect(lambda: self.render_image())
 
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
         self.setCentralWidget(self.ui)
