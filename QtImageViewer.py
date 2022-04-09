@@ -6,6 +6,7 @@ from PIL import Image, ImageTransform
 from PySide6.QtCore import Qt, QRectF, Signal
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
+from numpy import source
 
 
 class QtImageViewer(QGraphicsView):
@@ -131,26 +132,10 @@ class QtImageViewer(QGraphicsView):
         self.rotation = 0
 
     def export_image(self):
-        source_rect = self.mapToScene(self.viewport().geometry()).boundingRect()
-        
-        transform = [
-            source_rect.topLeft().toPoint().x(), source_rect.topLeft().toPoint().y(),
-            source_rect.bottomLeft().toPoint().x(), source_rect.bottomLeft().toPoint().y(),
-            source_rect.bottomRight().toPoint().x(), source_rect.bottomRight().toPoint().y(),
-            source_rect.topRight().toPoint().x(), source_rect.topRight().toPoint().y(),
-        ]
-        
-        img = Image.open(self.img_path).convert("RGB")
-        transformed = img.transform(
-            (
-                int(source_rect.width()),
-                int(source_rect.height())
-            ), 
-            ImageTransform.QuadTransform(transform)
-        )
-    
-        transformed.save("output.png")
-    
+        pixmap = QPixmap(self.viewport().size())
+        self.viewport().render(pixmap)
+
+        pixmap.save("test.png")
     
     # Events
 
