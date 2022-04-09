@@ -1,9 +1,10 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 
 import os.path
+from PIL import Image, ImageTransform
 
 from PySide6.QtCore import Qt, QRectF, Signal
-from PySide6.QtGui import QImage, QPixmap, QPainter
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
 
 
@@ -129,22 +130,28 @@ class QtImageViewer(QGraphicsView):
             self.rotate(self.rotation * -1)
         self.rotation = 0
 
-    def render_image(self):
-        if self.is_rotating or self.is_flipped:
-            print("Exporting flippend and/or rotated images isnt't supported yet")
-        else:
-            source_rect = self.mapToScene(self.viewport().geometry()).boundingRect()
-            image = QImage(source_rect.width(), source_rect.height(), QImage.Format.Format_ARGB32_Premultiplied)
-            painter = QPainter(image)
-
-            self.scene.render(painter, image.rect(), source_rect)
-            
-            painter.end()
-
-            image.save("exported.png")
-
-
-
+    def export_image(self):
+        source_rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        
+        transform = [
+            source_rect.topLeft().toPoint().x(), source_rect.topLeft().toPoint().y(),
+            source_rect.bottomLeft().toPoint().x(), source_rect.bottomLeft().toPoint().y(),
+            source_rect.bottomRight().toPoint().x(), source_rect.bottomRight().toPoint().y(),
+            source_rect.topRight().toPoint().x(), source_rect.topRight().toPoint().y(),
+        ]
+        
+        img = Image.open(self.img_path).convert("RGB")
+        transformed = img.transform(
+            (
+                int(source_rect.width()),
+                int(source_rect.height())
+            ), 
+            ImageTransform.QuadTransform(transform)
+        )
+    
+        transformed.save("output.png")
+    
+    
     # Events
 
     def resizeEvent(self, event):
@@ -153,6 +160,8 @@ class QtImageViewer(QGraphicsView):
 
     def mousePressEvent(self, event):
         scenePos = self.mapToScene(event.globalPosition().toPoint())
+        
+
 
         # pan if the left button has been pressed
         if event.button() == Qt.LeftButton:
