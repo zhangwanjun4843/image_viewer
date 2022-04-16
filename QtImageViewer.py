@@ -1,12 +1,9 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
-
 import os.path
-from PIL import Image, ImageTransform
 
 from PySide6.QtCore import Qt, QRectF, Signal
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
-from numpy import source
 
 
 class QtImageViewer(QGraphicsView):
@@ -40,6 +37,14 @@ class QtImageViewer(QGraphicsView):
 
         self.canZoom = True
         self.canPan = True
+
+
+        self.lines = []
+
+        self.is_drawing_line = False
+        self.line_start = None
+        self.da_line = None
+
 
     # return weather or not there is an image currently being displayed
     def hasImage(self):
@@ -122,7 +127,6 @@ class QtImageViewer(QGraphicsView):
     def toggle_rotating(self):
         self.is_rotating = not self.is_rotating
         
-
     def reset_rotation(self):
         # dont touch this it works somehow idk why
         if self.is_flipped:
@@ -137,6 +141,7 @@ class QtImageViewer(QGraphicsView):
 
         return pixmap
 
+
     # Events
 
     def resizeEvent(self, event):
@@ -144,15 +149,16 @@ class QtImageViewer(QGraphicsView):
 
 
     def mousePressEvent(self, event):
-        scenePos = self.mapToScene(event.globalPosition().toPoint())
-        
-
+        scenePos = self.mapToScene(event.pos())
 
         # pan if the left button has been pressed
         if event.button() == Qt.LeftButton:
             if self.canPan:
                 self.setDragMode(QGraphicsView.ScrollHandDrag)
             self.leftMouseButtonPressed.emit(scenePos.x(), scenePos.y())
+        elif event.button() == Qt.RightButton:
+            self.is_drawing_line = True
+            self.line_start = (scenePos.x(), scenePos.y())
 
         # send the mouse press event
         QGraphicsView.mousePressEvent(self, event)
@@ -161,7 +167,7 @@ class QtImageViewer(QGraphicsView):
     def mouseReleaseEvent(self, event):
         QGraphicsView.mouseReleaseEvent(self, event)
 
-        scenePos = self.mapToScene(event.globalPosition().toPoint())
+        scenePos = self.mapToScene(event.pos())
 
         # stop dragging if the left mouse button has been released
         if event.button() == Qt.LeftButton:
@@ -169,6 +175,12 @@ class QtImageViewer(QGraphicsView):
 
             # send the left mouse button released event
             self.leftMouseButtonReleased.emit(scenePos.x(), scenePos.y())
+        elif event.button() == Qt.RightButton:
+            self.lines.append(self.da_line)
+            self.is_drawing_line = False
+
+            self.line_start = None
+            self.da_line = None
 
 
     def mouseDoubleClickEvent(self, event):
@@ -181,8 +193,11 @@ class QtImageViewer(QGraphicsView):
             if self.canZoom:
                 self.zoomStack = []
                 self.updateViewer()
+        elif event.button() == Qt.LeftButton:
+            for line in self.lines:
+                self.scene.removeItem(line)
 
-            
+            self.lines = []
 
             self.rightMouseButtonDoubleClicked.emit(scenePos.x(), scenePos.y())
 
@@ -210,10 +225,6 @@ class QtImageViewer(QGraphicsView):
                     self.rotate(-rotation_step)
                     self.rotation += -rotation_step
 
-
-                    
-
-
         else:
             self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
@@ -222,3 +233,32 @@ class QtImageViewer(QGraphicsView):
                 self.scale(scale_factor, scale_factor)
             else:
                 self.scale(1.0 / scale_factor, 1.0 /  scale_factor)
+
+    def mouseMoveEvent(self, event):
+        scenePos = self.mapToScene(event.pos())
+
+        if self.is_drawing_line:
+            if self.da_line != None:
+                self.scene.removeItem(self.da_line)
+                
+            self.da_line = self.scene.addLine(self.line_start[0], self.line_start[1], scenePos.x(), scenePos.y())
+    
+
+
+        QGraphicsView.mouseMoveEvent(self, event)
+
+    # def mouseMoveEvent(self, event):
+    #     scenePos = self.mapToScene(event.globalPosition().toPoint())
+    #     print(scenePos)
+
+    #     mouse_pos = (scenePos.x(), scenePos.y())
+        
+    #     if self.drawing_line:
+    #         if self.line_start == None:
+    #             self.line_start = (mouse_pos[0], mouse_pos[1])
+
+    #         for line in self.line_stack:
+    #             self.scene.removeItem(line)
+
+    #         line = self.scene.addLine(self.line_start[0], self.line_start[1], mouse_pos[0], mouse_pos[1])
+    #         self.line_stack.append(line)
