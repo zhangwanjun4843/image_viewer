@@ -1,7 +1,7 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 import os
 
-from PySide6.QtCore import Qt, QRectF, Signal
+from PySide6.QtCore import Qt, QRectF, Signal, QPointF
 from PySide6.QtGui import QImage, QPixmap, QKeyEvent
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
 
@@ -259,6 +259,13 @@ class QtImageViewer(QGraphicsView):
                 )
             elif self.shape_type == "rectangle":
                 self.shape = self.scene.addRect(
+                    self.shape_start[0],
+                    self.shape_start[1],
+                    (scenePos.x() - self.shape_start[0]),
+                    (scenePos.y() - self.shape_start[1])
+                )
+            elif self.shape_type == "ellipse":
+                self.shape = self.scene.addEllipse(
                     self.shape_start[0],
                     self.shape_start[1],
                     (scenePos.x() - self.shape_start[0]),

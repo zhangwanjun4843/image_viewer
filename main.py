@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
 
         self.edit_window.line_btn.clicked.connect(lambda: self.set_drawing_shape("line"))
         self.edit_window.rectangle_btn.clicked.connect(lambda: self.set_drawing_shape("rectangle"))
+        self.edit_window.ellipse_btn.clicked.connect(lambda: self.set_drawing_shape("ellipse"))
 
 
         # window options
