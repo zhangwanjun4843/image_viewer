@@ -1,18 +1,13 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
-import os.path
+import os
 
 from PySide6.QtCore import Qt, QRectF, Signal
-from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtGui import QImage, QPixmap, QKeyEvent
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
 
 
 class QtImageViewer(QGraphicsView):
-    leftMouseButtonPressed = Signal(float, float)
-    rightMouseButtonPressed = Signal(float, float)
-    leftMouseButtonReleased = Signal(float, float)
-    rightMouseButtonReleased = Signal(float, float)
-    leftMouseButtonDoubleClicked = Signal(float, float)
-    rightMouseButtonDoubleClicked = Signal(float, float)
+    keyPressed = Signal(QKeyEvent)
 
     def __init__(self):
         QGraphicsView.__init__(self)
@@ -31,8 +26,7 @@ class QtImageViewer(QGraphicsView):
 
         self.is_rotating = False
         self.rotation = 0
-
-        self.zoomStack = []
+        self.rotation_step = 5
 
         self.shapes = []
 
@@ -41,26 +35,26 @@ class QtImageViewer(QGraphicsView):
         self.shape = None
         self.shape_type = None
 
+        self.files = []
 
-    # return weather or not there is an image currently being displayed
-    def hasImage(self):
+
+    def has_image(self):
         return self._pixmapHandle is not None
 
-    # remove the curerent image from the image viewer
-    def clearImage(self):
-        if self.hasImage():
+    def clear_image(self):
+        if self.has_image():
             self.scene.removeItem(self._pixmapHandle)
             self._pixmapHandle = None
 
-    # return the iamge currently being displayed as a pixmap
+    # return the image currently being displayed as a pixmap
     def pixmap(self):
-        if self.hasImage():
+        if self.has_image():
             return self._pixmapHandle.pixmap()
         return None
 
     # return the image currently being displayed as QImage
     def image(self):
-        if self.hasImage():
+        if self.has_image():
             return self._pixmapHandle.pixmap().toImage()
         return None
 
@@ -71,50 +65,31 @@ class QtImageViewer(QGraphicsView):
             pixmap = image 
         elif type(image) is QImage:
             pixmap = QPixmap.fromImage(image)
-        else:
-            raise RuntimeError("ImageViewer.setImage: Argument must be a QImage or QPixmap.")
 
         # dunno what this does
-        if self.hasImage():
+        if self.has_image():
             self._pixmapHandle.setPixmap(pixmap)
         else:
             self._pixmapHandle = self.scene.addPixmap(pixmap)
         
         # adjust the view of the scene to the pixmap
         self.setSceneRect(QRectF(pixmap.rect()))
-        self.updateViewer()
+        self.fitInView(self.sceneRect(), self.aspectRatioMode)
 
     # load an image from a filepath
-    def load_image_from_file(self, fileName=""):
-        if len(fileName) == 0:
-            fileName, dummy = QFileDialog.getOpenFileName(self, "Open image file.")
-        if len(fileName) and os.path.isfile(fileName):
-            self.img_path = fileName
-            image = QImage(fileName)
+    def load_image_from_file(self, file_name=""):
+        if len(file_name) == 0:
+            file_name, dummy = QFileDialog.getOpenFileName(self, "Open image file:")
+
+        if len(file_name) and os.path.isfile(file_name):
+            dir_name = os.path.dirname(file_name)
+            self.files = [f for f in os.listdir(dir_name) if f.split(".")[-1] in ["png", "jpg"]]
+
+            self.img_path = file_name
+            image = QImage(file_name)
             self.set_image(image)
 
-        if self.is_flipped:
-            self.flip_image()
-
-        self.rotate(self.rotation * -1)
-
-        self.zoomStack = []
-        self.updateViewer()
-
-
-    # update the zoom of the image viewer
-    def updateViewer(self):
-        # return if the image viewer isnt currently displaying an image
-        if not self.hasImage():
-            return
-
-        # adjust the zoom of the image viewer to the latest rect on the zoom stack
-        if len(self.zoomStack) and self.sceneRect().contains(self.zoomStack[-1]):
-            self.fitInView(self.zoomStack[-1], self.aspectRatioMode)
-        else:
-            # reset the zoom if the zoom stack is empty
-            self.zoomStack = []
-            self.fitInView(self.sceneRect(), self.aspectRatioMode)
+        self.reset_viewer(zoom = True, flip = True, rotation = True)
 
     def flip_image(self):
         self.scale(-1, 1)
@@ -123,18 +98,23 @@ class QtImageViewer(QGraphicsView):
     def toggle_rotating(self):
         self.is_rotating = not self.is_rotating
         
-    def reset_rotation(self):
-        # dont touch this it works somehow idk why
-        if self.is_flipped:
-            self.rotate(self.rotation)
-        else:
-            self.rotate(self.rotation * -1)
-        self.rotation = 0
+    def reset_viewer(self, rotation, zoom, flip):
+        if flip:
+            if self.is_flipped:
+                    self.flip_image()
 
-    def reset_zoom(self):
-        self.zoomStack = []
-        self.updateViewer()
+        if rotation:
+            # dont touch this it works somehow idk why
+            if self.is_flipped:
+                self.rotate(self.rotation)
+            else:
+                self.rotate(self.rotation * -1)
+            self.rotation = 0
 
+        if zoom:
+            self.fitInView(self.sceneRect(), self.aspectRatioMode)
+
+    # returns the viewport as pixmap
     def export_image(self):
         pixmap = QPixmap(self.viewport().size())
         self.viewport().render(pixmap)
@@ -144,12 +124,55 @@ class QtImageViewer(QGraphicsView):
     def set_shape_type(self, shape):
         self.shape_type = shape
 
+
+    # THE FOLLOWING CODE IS TERRIBLE. REWRITE UNDER ALL CIRCUMSTANCES (except temporary laziness, I need a loophole shut up)
+    # ----------------------------------------------
+    def step_left(self):
+        file_name = os.path.basename(self.img_path)
+        index = self.files.index(file_name)
+
+        print(index, len(self.files))
+        if index + 1 < 0:
+            return
+
+        try:
+            new_file = self.files[index - 1]
+        except IndexError:
+            return
+
+        new_file = os.path.join(os.path.dirname(self.img_path), new_file)
+
+        self.img_path = new_file
+        image = QImage(new_file)
+        self.set_image(image)
+
+
+
+    def step_right(self):
+        file_name = os.path.basename(self.img_path)
+        index = self.files.index(file_name)
+
+        print(index, len(self.files))
+        if index + 1 > len(self.files):
+            return
+
+        try:
+            new_file = self.files[index + 1]
+        except IndexError:
+            new_file = self.files[0]
+
+        new_file = os.path.join(os.path.dirname(self.img_path), new_file)
+
+        self.img_path = new_file
+        image = QImage(new_file)
+        self.set_image(image)
+    # ----------------------------------------------
+
+
+
     # Events
-
     def resizeEvent(self, event):
-        # self.updateViewer()
-        pass
-
+        self.fitInView(self.sceneRect(), self.aspectRatioMode)
 
     def mousePressEvent(self, event):
         scenePos = self.mapToScene(event.pos())
@@ -167,8 +190,6 @@ class QtImageViewer(QGraphicsView):
     def mouseReleaseEvent(self, event):
         QGraphicsView.mouseReleaseEvent(self, event)
 
-        scenePos = self.mapToScene(event.pos())
-
         if event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.NoDrag)
 
@@ -180,44 +201,37 @@ class QtImageViewer(QGraphicsView):
             self.shape = None
 
 
-    def mouseDoubleClickEvent(self, event):
-        scenePos = self.mapToScene(event.globalPosition().toPoint())
-        
-        if event.button() == Qt.RightButton:
-            self.reset_rotation()
-            self.reset_zoom()
-            
-        elif event.button() == Qt.LeftButton:
+    def mouseDoubleClickEvent(self, event):        
+        if event.button() == Qt.LeftButton:
             for line in self.shapes:
                 self.scene.removeItem(line)
 
             self.shapes = []
 
-            self.rightMouseButtonDoubleClicked.emit(scenePos.x(), scenePos.y())
-
-
+        elif event.button() == Qt.RightButton:
+            self.reset_viewer(rotation = True, flip = False, zoom = True)
+            
         QGraphicsView.mouseDoubleClickEvent(self, event)
+
 
     def wheelEvent(self, event):
         # dont touch it it works idk why but it works
         if self.is_rotating:
-            rotation_step = 5
-
             if event.angleDelta().y() > 0:
                 if self.is_flipped:
-                    self.rotate(-rotation_step)
-                    self.rotation += rotation_step
+                    self.rotate(-self.rotation_step)
+                    self.rotation += self.rotation_step
                 else:
-                    self.rotate(rotation_step)
-                    self.rotation += rotation_step
+                    self.rotate(self.rotation_step)
+                    self.rotation += self.rotation_step
 
             else:
                 if self.is_flipped:
-                    self.rotate(rotation_step)
-                    self.rotation += -rotation_step
+                    self.rotate(self.rotation_step)
+                    self.rotation -= self.rotation_step
                 else:
-                    self.rotate(-rotation_step)
-                    self.rotation += -rotation_step
+                    self.rotate(-self.rotation_step)
+                    self.rotation -= self.rotation_step
 
         else:
             self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -226,7 +240,7 @@ class QtImageViewer(QGraphicsView):
             if event.angleDelta().y() > 0:
                 self.scale(scale_factor, scale_factor)
             else:
-                self.scale(1.0 / scale_factor, 1.0 /  scale_factor)
+                self.scale(1.0 / scale_factor, 1.0 / scale_factor)
 
     def mouseMoveEvent(self, event):
         scenePos = self.mapToScene(event.pos())
@@ -237,11 +251,22 @@ class QtImageViewer(QGraphicsView):
 
 
             if self.shape_type == "line":
-                self.shape = self.scene.addLine(self.shape_start[0], self.shape_start[1], scenePos.x(), scenePos.y())
+                self.shape = self.scene.addLine(
+                    self.shape_start[0],
+                    self.shape_start[1],
+                    scenePos.x(),
+                    scenePos.y()
+                )
             elif self.shape_type == "rectangle":
-                self.shape = self.scene.addRect(self.shape_start[0], self.shape_start[1], (scenePos.x() - self.shape_start[0]), (scenePos.y() - self.shape_start[1]))
+                self.shape = self.scene.addRect(
+                    self.shape_start[0],
+                    self.shape_start[1],
+                    (scenePos.x() - self.shape_start[0]),
+                    (scenePos.y() - self.shape_start[1])
+                )
 
         QGraphicsView.mouseMoveEvent(self, event)
 
     def keyPressEvent(self, event):
-        print(event)
+        print("test")
+        self.keyPressed.emit(event)

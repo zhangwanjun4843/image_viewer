@@ -1,9 +1,8 @@
-import sys
-from types import LambdaType
+import sys, os
 
-from PySide6.QtWidgets import QMainWindow, QApplication, QPushButton
+from PySide6.QtWidgets import QMainWindow, QApplication
 from PySide6.QtUiTools import QUiLoader
-from numpy import isin
+
 from QtImageViewer import QtImageViewer
 
 from qt_material import apply_stylesheet
@@ -31,6 +30,9 @@ class MainWindow(QMainWindow):
 
 
         # connect the widgets to their respective functions
+        self.ui.left_btn.clicked.connect(lambda: self.ui.imageViewer.step_left())
+        self.ui.right_btn.clicked.connect(lambda: self.ui.imageViewer.step_right())
+
         self.ui.open_btn.clicked.connect(lambda: self.show_image())
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
@@ -44,6 +46,8 @@ class MainWindow(QMainWindow):
         # window options
         self.setWindowTitle("Image Viewer")
         self.setCentralWidget(self.ui)
+
+        self.count = 0
 
     def show_image(self):
         self.ui.imageViewer.load_image_from_file()
@@ -83,14 +87,7 @@ class MainWindow(QMainWindow):
     def set_drawing_shape(self, shape):
         self.ui.imageViewer.set_shape_type(shape)
 
-    def test(self, event):
-        print(event)
-
     
-    # Events
-    def keyPressEvent(self, event):
-        print(event)
-
 def run():
     app = QApplication(sys.argv)
     window = MainWindow()
