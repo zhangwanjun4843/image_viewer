@@ -24,7 +24,6 @@ class QtImageViewer(QGraphicsView):
         self.img_path = None
 
         self.aspectRatioMode = Qt.KeepAspectRatio
-
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
@@ -35,15 +34,12 @@ class QtImageViewer(QGraphicsView):
 
         self.zoomStack = []
 
-        self.canZoom = True
-        self.canPan = True
+        self.shapes = []
 
-
-        self.lines = []
-
-        self.is_drawing_line = False
-        self.line_start = None
-        self.da_line = None
+        self.is_drawing = False
+        self.shape_start = None
+        self.shape = None
+        self.shape_type = None
 
 
     # return weather or not there is an image currently being displayed
@@ -135,32 +131,36 @@ class QtImageViewer(QGraphicsView):
             self.rotate(self.rotation * -1)
         self.rotation = 0
 
+    def reset_zoom(self):
+        self.zoomStack = []
+        self.updateViewer()
+
     def export_image(self):
         pixmap = QPixmap(self.viewport().size())
         self.viewport().render(pixmap)
 
         return pixmap
 
+    def set_shape_type(self, shape):
+        self.shape_type = shape
 
     # Events
 
     def resizeEvent(self, event):
-        self.updateViewer()
+        # self.updateViewer()
+        pass
 
 
     def mousePressEvent(self, event):
         scenePos = self.mapToScene(event.pos())
 
-        # pan if the left button has been pressed
         if event.button() == Qt.LeftButton:
-            if self.canPan:
-                self.setDragMode(QGraphicsView.ScrollHandDrag)
-            self.leftMouseButtonPressed.emit(scenePos.x(), scenePos.y())
-        elif event.button() == Qt.RightButton:
-            self.is_drawing_line = True
-            self.line_start = (scenePos.x(), scenePos.y())
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
 
-        # send the mouse press event
+        elif event.button() == Qt.RightButton:
+            self.is_drawing = True
+            self.shape_start = (scenePos.x(), scenePos.y())
+
         QGraphicsView.mousePressEvent(self, event)
 
 
@@ -169,18 +169,15 @@ class QtImageViewer(QGraphicsView):
 
         scenePos = self.mapToScene(event.pos())
 
-        # stop dragging if the left mouse button has been released
         if event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.NoDrag)
 
-            # send the left mouse button released event
-            self.leftMouseButtonReleased.emit(scenePos.x(), scenePos.y())
         elif event.button() == Qt.RightButton:
-            self.lines.append(self.da_line)
-            self.is_drawing_line = False
+            self.shapes.append(self.shape)
+            self.is_drawing = False
 
-            self.line_start = None
-            self.da_line = None
+            self.shape_start = None
+            self.shape = None
 
 
     def mouseDoubleClickEvent(self, event):
@@ -188,16 +185,13 @@ class QtImageViewer(QGraphicsView):
         
         if event.button() == Qt.RightButton:
             self.reset_rotation()
-
-            # reset the zoom of the image
-            if self.canZoom:
-                self.zoomStack = []
-                self.updateViewer()
+            self.reset_zoom()
+            
         elif event.button() == Qt.LeftButton:
-            for line in self.lines:
+            for line in self.shapes:
                 self.scene.removeItem(line)
 
-            self.lines = []
+            self.shapes = []
 
             self.rightMouseButtonDoubleClicked.emit(scenePos.x(), scenePos.y())
 
@@ -237,28 +231,17 @@ class QtImageViewer(QGraphicsView):
     def mouseMoveEvent(self, event):
         scenePos = self.mapToScene(event.pos())
 
-        if self.is_drawing_line:
-            if self.da_line != None:
-                self.scene.removeItem(self.da_line)
-                
-            self.da_line = self.scene.addLine(self.line_start[0], self.line_start[1], scenePos.x(), scenePos.y())
-    
+        if self.is_drawing:
+            if self.shape != None:
+                self.scene.removeItem(self.shape)
 
+
+            if self.shape_type == "line":
+                self.shape = self.scene.addLine(self.shape_start[0], self.shape_start[1], scenePos.x(), scenePos.y())
+            elif self.shape_type == "rectangle":
+                self.shape = self.scene.addRect(self.shape_start[0], self.shape_start[1], (scenePos.x() - self.shape_start[0]), (scenePos.y() - self.shape_start[1]))
 
         QGraphicsView.mouseMoveEvent(self, event)
 
-    # def mouseMoveEvent(self, event):
-    #     scenePos = self.mapToScene(event.globalPosition().toPoint())
-    #     print(scenePos)
-
-    #     mouse_pos = (scenePos.x(), scenePos.y())
-        
-    #     if self.drawing_line:
-    #         if self.line_start == None:
-    #             self.line_start = (mouse_pos[0], mouse_pos[1])
-
-    #         for line in self.line_stack:
-    #             self.scene.removeItem(line)
-
-    #         line = self.scene.addLine(self.line_start[0], self.line_start[1], mouse_pos[0], mouse_pos[1])
-    #         self.line_stack.append(line)
+    def keyPressEvent(self, event):
+        print(event)
