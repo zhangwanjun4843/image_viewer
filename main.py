@@ -30,8 +30,10 @@ class MainWindow(QMainWindow):
 
 
         # connect the widgets to their respective functions
-        self.ui.left_btn.clicked.connect(lambda: self.ui.imageViewer.step_left())
-        self.ui.right_btn.clicked.connect(lambda: self.ui.imageViewer.step_right())
+        self.ui.imageViewer.file_changed.connect(lambda new_name: self.image_changed(new_name))
+
+        self.ui.left_btn.clicked.connect(lambda: self.ui.imageViewer.step("left"))
+        self.ui.right_btn.clicked.connect(lambda: self.ui.imageViewer.step("right"))
 
         self.ui.open_btn.clicked.connect(lambda: self.show_image())
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
@@ -51,8 +53,7 @@ class MainWindow(QMainWindow):
         self.count = 0
 
     def show_image(self):
-        self.ui.imageViewer.load_image_from_file()
-        self.setWindowTitle(f"Viewing {self.ui.imageViewer.img_path}")
+        self.ui.imageViewer.file_from_file_dialog()
 
     def flip_image(self):
         self.ui.imageViewer.flip_image()
@@ -88,6 +89,8 @@ class MainWindow(QMainWindow):
     def set_drawing_shape(self, shape):
         self.ui.imageViewer.set_shape_type(shape)
 
+    def image_changed(self, new_name):
+        self.setWindowTitle(f"Viewing \"{new_name}\"")
     
 def run():
     app = QApplication(sys.argv)
