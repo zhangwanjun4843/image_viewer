@@ -29,6 +29,7 @@ class QtImageViewer(QGraphicsView):
         self.rotation_step = 5
 
         self.scale_factor = 1
+        self.resize_lock = False
 
         self.shapes = []
 
@@ -37,10 +38,7 @@ class QtImageViewer(QGraphicsView):
         self.shape = None
         self.shape_type = None
 
-        self.files = {
-            "files": None,
-            "states": {}
-        }
+        self.files = []
         self.img_path = None
         self.img_dir = None
         self.img_name = None
@@ -97,15 +95,13 @@ class QtImageViewer(QGraphicsView):
         if os.path.isfile(file_path):
             self.img_dir = os.path.dirname(file_path)
             self.img_name = os.path.basename(file_path)
-            self.files["files"] = [f for f in os.listdir(self.img_dir) if f.split(".")[-1] in ["png", "jpg"]]
+            self.files = [f for f in os.listdir(self.img_dir) if f.split(".")[-1] in self.SUPPORTED_FILE_TYPES]
 
             self.img_path = file_path
             image = QImage(file_path)
             self.set_image(image)
 
             self.file_changed.emit(self.img_name)
-
-            self.load_state(self.img_name)
 
 
     def flip_image(self):
@@ -138,6 +134,9 @@ class QtImageViewer(QGraphicsView):
             self.fitInView(self.sceneRect(), self.aspectRatioMode)
         self.scale_factor = 1
 
+    def adjust_zoom(self):
+        self.fitInView(self.zoom_rect, self.aspectRatioMode)
+
     # returns the viewport as pixmap
     def export_image(self):
         pixmap = QPixmap(self.viewport().size())
@@ -148,28 +147,31 @@ class QtImageViewer(QGraphicsView):
     def set_shape_type(self, shape):
         self.shape_type = shape
 
-
     def step(self, direction):
-        index = self.files["files"].index(self.img_name)
+        index = self.files.index(self.img_name)
 
         if direction == "left":
             if index == 0:
                 return
-            new_img_name = os.path.join(self.img_dir, self.files["files"][index - 1])
+            new_img_name = os.path.join(self.img_dir, self.files[index - 1])
 
         elif direction == "right":
-            if index + 1 == len(self.files["files"]):
+            if index + 1 == len(self.files):
                 return
-            new_img_name = os.path.join(self.img_dir, self.files["files"][index + 1])
+            new_img_name = os.path.join(self.img_dir, self.files[index + 1])
 
-        self.save_state(self.img_name)
         self.load_file(new_img_name)
+
 
 
 
     # Events
     def resizeEvent(self, event):
-        self.fitInView(self.sceneRect(), self.aspectRatioMode)
+        if self.resize_lock:
+            self.resize_lock = not self.resize_lock
+            return
+
+        self.reset_viewer(zoom = True)
 
     def mousePressEvent(self, event):
         scenePos = self.mapToScene(event.pos())
@@ -237,6 +239,8 @@ class QtImageViewer(QGraphicsView):
             else:
                 self.scale(1.0 / scale_factor, 1.0 / scale_factor)
                 self.scale_factor *= 1.0 / scale_factor
+
+            self.zoom_rect = self.mapToScene(self.viewport().rect())
 
 
     def mouseMoveEvent(self, event):

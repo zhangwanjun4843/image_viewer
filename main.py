@@ -41,10 +41,11 @@ class MainWindow(QMainWindow):
         self.ui.export_btn.clicked.connect(lambda: self.export_image())
         self.ui.edit_mode_btn.clicked.connect(lambda: self.toggle_edit_mode())
 
-        self.edit_window.line_btn.clicked.connect(lambda: self.set_drawing_shape("line"))
-        self.edit_window.rectangle_btn.clicked.connect(lambda: self.set_drawing_shape("rectangle"))
-        self.edit_window.ellipse_btn.clicked.connect(lambda: self.set_drawing_shape("ellipse"))
+        self.edit_window.line_btn.clicked.connect(lambda: self.ui.imageViewer.set_shape_type("line"))
+        self.edit_window.rectangle_btn.clicked.connect(lambda: self.ui.imageViewer.set_shape_type("rectangle"))
+        self.edit_window.ellipse_btn.clicked.connect(lambda: self.ui.imageViewer.set_shape_type("ellipse"))
 
+        self.edit_window.line_width_slider.valueChanged.connect(lambda value: self.line_width_slider(value))
 
         # window options
         self.setWindowTitle("Image Viewer")
@@ -70,13 +71,20 @@ class MainWindow(QMainWindow):
 
     def toggle_edit_mode(self):
         if self.edit_shown:
+            if self.ui.imageViewer.scale_factor != 1:
+                self.ui.imageViewer.resize_lock = True
+
             self.edit_window.hide()
 
             self.ui.horizontalLayout_2.setStretch(0, 0)
             self.ui.horizontalLayout_2.setStretch(1, 0)
 
             self.ui.imageViewer.set_shape_type(None)
+
         else:
+            if self.ui.imageViewer.scale_factor != 1:
+                self.ui.imageViewer.resize_lock = True
+
             self.ui.imageViewer.set_shape_type("line")
 
             self.ui.horizontalLayout_2.setStretch(0, 75)
@@ -84,10 +92,11 @@ class MainWindow(QMainWindow):
 
             self.edit_window.show()
 
+
         self.edit_shown = not self.edit_shown
 
-    def set_drawing_shape(self, shape):
-        self.ui.imageViewer.set_shape_type(shape)
+    def line_width_slider(self, value):
+        self.edit_window.label.setText(str(value))        
 
     def image_changed(self, new_name):
         self.setWindowTitle(f"Viewing \"{new_name}\"")
