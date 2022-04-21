@@ -1,6 +1,5 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 import os
-from pprint import pprint
 
 from PySide6.QtCore import Qt, QRectF, Signal, QPointF
 from PySide6.QtGui import QImage, QPixmap, QKeyEvent
@@ -95,12 +94,13 @@ class QtImageViewer(QGraphicsView):
         if os.path.isfile(file_path):
             self.img_dir = os.path.dirname(file_path)
             self.img_name = os.path.basename(file_path)
-            self.files = [f for f in os.listdir(self.img_dir) if f.split(".")[-1] in self.SUPPORTED_FILE_TYPES]
+            self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
 
             self.img_path = file_path
             image = QImage(file_path)
             self.set_image(image)
 
+            self.reset_viewer(rotation = True, zoom = True, flip = True, shapes = True)
             self.file_changed.emit(self.img_name)
 
 
@@ -244,6 +244,7 @@ class QtImageViewer(QGraphicsView):
 
 
     def mouseMoveEvent(self, event):
+        # print(type(Qt.ControlModifier == event.modifiers()))
         scenePos = self.mapToScene(event.pos())
 
         if self.is_drawing:
