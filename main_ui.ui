@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>341</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,8 +22,8 @@
   <widget class="QWidget" name="ui">
    <property name="minimumSize">
     <size>
-     <width>300</width>
-     <height>200</height>
+     <width>400</width>
+     <height>500</height>
     </size>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -33,16 +33,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QPushButton" name="edit_mode_btn">
-            <property name="text">
-             <string>Edit Mode</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QPushButton" name="flip_btn">
             <property name="text">

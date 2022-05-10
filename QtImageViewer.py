@@ -1,10 +1,7 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 import os
 
-from PySide6.QtCore import Qt, QRectF, Signal, QPointF
-from PySide6.QtGui import QImage, QPixmap, QKeyEvent
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QFileDialog
-
+from qt_core import *
 
 class QtImageViewer(QGraphicsView):
     file_changed = Signal(str)
@@ -115,12 +112,12 @@ class QtImageViewer(QGraphicsView):
         if shapes:
             for line in self.shapes:
                 self.scene.removeItem(line)
-        self.shapes = []
+            self.shapes = []
       
         if flip:
             if self.is_flipped:
                     self.flip_image()
-        self.is_flipped = False
+            self.is_flipped = False
 
         if rotation:
             # dont touch this it works somehow idk why
@@ -128,11 +125,11 @@ class QtImageViewer(QGraphicsView):
                 self.rotate(self.rotation)
             else:
                 self.rotate(self.rotation * -1)
-        self.rotation = 0
+            self.rotation = 0
 
         if zoom:
             self.fitInView(self.sceneRect(), self.aspectRatioMode)
-        self.scale_factor = 1
+            self.scale_factor = 1
 
     def adjust_zoom(self):
         self.fitInView(self.zoom_rect, self.aspectRatioMode)
@@ -244,7 +241,6 @@ class QtImageViewer(QGraphicsView):
 
 
     def mouseMoveEvent(self, event):
-        # print(type(Qt.ControlModifier == event.modifiers()))
         scenePos = self.mapToScene(event.pos())
 
         if self.is_drawing:

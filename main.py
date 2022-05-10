@@ -1,7 +1,6 @@
 import sys, os
 
-from PySide6.QtWidgets import QMainWindow, QApplication
-from PySide6.QtUiTools import QUiLoader
+from qt_core import *
 
 from QtImageViewer import QtImageViewer
 
@@ -39,13 +38,20 @@ class MainWindow(QMainWindow):
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
         self.ui.export_btn.clicked.connect(lambda: self.export_image())
-        self.ui.edit_mode_btn.clicked.connect(lambda: self.toggle_edit_mode())
+        # self.ui.edit_mode_btn.clicked.connect(lambda: self.toggle_edit_mode())
 
         self.edit_window.line_btn.clicked.connect(lambda: self.ui.imageViewer.set_shape_type("line"))
         self.edit_window.rectangle_btn.clicked.connect(lambda: self.ui.imageViewer.set_shape_type("rectangle"))
         self.edit_window.ellipse_btn.clicked.connect(lambda: self.ui.imageViewer.set_shape_type("ellipse"))
 
         self.edit_window.line_width_slider.valueChanged.connect(lambda value: self.line_width_slider(value))
+
+        # keyboard shortcuts
+        # This: https://learndataanalysis.org/create-and-assign-keyboard-shortcuts-to-your-pyqt-application-pyqt5-tutorial/
+        # article does a great job at showing how keyboard shortcuts work in qt.
+        # self.open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
+        # self.open_shortcut.activated.connect(self.show_image())
+
 
         # window options
         self.setWindowTitle("Image Viewer")
@@ -94,6 +100,8 @@ class MainWindow(QMainWindow):
 
 
         self.edit_shown = not self.edit_shown
+
+
 
     def line_width_slider(self, value):
         self.edit_window.label.setText(str(value))        
