@@ -1,5 +1,6 @@
 # https://github.com/marcel-goldschen-ohm/PyQtImageViewer
 import os
+from typing import overload
 
 from qt_core import *
 
@@ -12,11 +13,13 @@ class QtImageViewer(QGraphicsView):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
-        self._pixmapHandle = None
+        self.pixmaps = []
 
         self.aspectRatioMode = Qt.KeepAspectRatio
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.items_selectable = True
 
         self.is_flipped = False
 
@@ -42,63 +45,100 @@ class QtImageViewer(QGraphicsView):
         self.SUPPORTED_FILE_TYPES = [".png", ".jpg"]
 
 
-    def has_image(self):
-        return self._pixmapHandle is not None
-
-    def clear_image(self):
-        if self.has_image():
-            self.scene.removeItem(self._pixmapHandle)
-            self._pixmapHandle = None
-
-    # return the image currently being displayed as a pixmap
-    def pixmap(self):
-        if self.has_image():
-            return self._pixmapHandle.pixmap()
-        return None
-
-    # return the image currently being displayed as QImage
-    def image(self):
-        if self.has_image():
-            return self._pixmapHandle.pixmap().toImage()
-        return None
-
-    # set an image to be displayed on the image viewer
-    def set_image(self, image):
-        # convert the iamge to pixmap
-        if type(image) is QPixmap:
-            pixmap = image 
-        elif type(image) is QImage:
-            pixmap = QPixmap.fromImage(image)
-
-        # dunno what this does
-        if self.has_image():
-            self._pixmapHandle.setPixmap(pixmap)
-        else:
-            self._pixmapHandle = self.scene.addPixmap(pixmap)
-        
-        # adjust the view of the scene to the pixmap
-        self.setSceneRect(QRectF(pixmap.rect()))
-        self.fitInView(self.sceneRect(), self.aspectRatioMode)
-
-    # load an image from a filepath
-    def file_from_file_dialog(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open image file:")
-
-        self.load_file(file_name)
-
-
-    def load_file(self, file_path):
-        if os.path.isfile(file_path):
-            self.img_dir = os.path.dirname(file_path)
-            self.img_name = os.path.basename(file_path)
+    def load_image(self, path):
+        if os.path.isfile(path):
+            #TODO: add checks if the image being loaded is already in the loaded directory
+            self.img_path = path
+            self.img_dir = os.path.dirname(path)
+            self.img_name = os.path.basename(path)
             self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
 
-            self.img_path = file_path
-            image = QImage(file_path)
-            self.set_image(image)
+            pixmap = QPixmap(path)
 
-            self.reset_viewer(rotation = True, zoom = True, flip = True, shapes = True)
-            self.file_changed.emit(self.img_name)
+            pixmap_item = self.add_image(pixmap)
+            pixmap_item.setFlag(QGraphicsItem.ItemIsSelectable)
+            pixmap_item.setFlag(QGraphicsItem.ItemIsMovable)
+
+            self.pixmaps.append(pixmap_item)
+
+    def add_image(self, pixmap):
+        pixmap_item = self.scene.addPixmap(pixmap)
+        self.reset_viewer(zoom = True)
+        # self.setSceneRect(self.scene.itemsBoundingRect())
+
+        return pixmap_item
+        
+    def add_debug_thing(self):
+        paths = [r"C:\Users\pault\Pictures\one.png", r"C:\Users\pault\Pictures\f0cc337d3ff7275a4dc734f73690c5e7.webp"]
+
+        for path in paths:
+            pixmap = QPixmap(path)
+            graphics_item = self.scene.addPixmap(pixmap)
+            self.pixmaps.append(graphics_item)
+
+
+    
+
+
+    # def has_image(self):
+    #     return self._pixmapHandle is not None
+
+    # def clear_image(self):
+    #     if self.has_image():
+    #         self.scene.removeItem(self._pixmapHandle)
+    #         self._pixmapHandle = None
+
+    # # return the image currently being displayed as a pixmap
+    # def pixmap(self):
+    #     if self.has_image():
+    #         return self._pixmapHandle.pixmap()
+    #     return None
+
+    # # return the image currently being displayed as QImage
+    # def image(self):
+    #     if self.has_image():
+    #         return self._pixmapHandle.pixmap().toImage()
+    #     return None
+
+    # # set an image to be displayed on the image viewer
+    # def set_image(self, image):
+    #     # convert the iamge to pixmap
+    #     if type(image) is QPixmap:
+    #         pixmap = image 
+    #     elif type(image) is QImage:
+    #         pixmap = QPixmap.fromImage(image)
+
+    #     # dunno what this does
+    #     if self.has_image():
+    #         self._pixmapHandle.setPixmap(pixmap)
+    #     else:
+    #         self._pixmapHandle = self.scene.addPixmap(pixmap)
+        
+    #     # adjust the view of the scene to the pixmap
+    #     self.setSceneRect(QRectF(pixmap.rect()))
+    #     self.fitInView(self.sceneRect(), self.aspectRatioMode)
+
+    # # load an image from a filepath
+    # def file_from_file_dialog(self):
+    #     file_name, _ = QFileDialog.getOpenFileName(self, "Open image file:")
+
+    #     self.load_file(file_name)
+
+
+    # def load_file(self, file_path):
+    #     if os.path.isfile(file_path):
+    #         self.img_dir = os.path.dirname(file_path)
+    #         self.img_name = os.path.basename(file_path)
+    #         self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
+
+    #         self.img_path = file_path
+    #         image = QImage(file_path)
+    #         self.set_image(image)
+
+    #         self.reset_viewer(rotation = True, zoom = True, flip = True, shapes = True)
+            # self.file_changed.emit(self.img_name)
+
+
 
 
     def flip_image(self):
@@ -128,6 +168,7 @@ class QtImageViewer(QGraphicsView):
             self.rotation = 0
 
         if zoom:
+            self.setSceneRect(self.scene.itemsBoundingRect())
             self.fitInView(self.sceneRect(), self.aspectRatioMode)
             self.scale_factor = 1
 
@@ -140,9 +181,6 @@ class QtImageViewer(QGraphicsView):
         self.viewport().render(pixmap)
 
         return pixmap
-
-    def set_shape_type(self, shape):
-        self.shape_type = shape
 
     def step(self, direction):
         index = self.files.index(self.img_name)
@@ -159,9 +197,23 @@ class QtImageViewer(QGraphicsView):
 
         self.load_file(new_img_name)
 
+    def toggle_selectable(self):
+        match self.items_selectable:
+            case False:
+                for pixmap in self.pixmaps:
+                    pixmap.setFlag(QGraphicsItem.ItemIsSelectable, True)
+                    pixmap.setFlag(QGraphicsItem.ItemIsMovable, True)
+                self.items_selectable = True
+                print("Enabled Item selection and movation")
 
-
-
+        
+            case True:
+                for pixmap in self.pixmaps:
+                    pixmap.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    pixmap.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.items_selectable = False
+                print("Disabled Item selection and movation")
+        
     # Events
     def resizeEvent(self, event):
         if self.resize_lock:
@@ -175,10 +227,8 @@ class QtImageViewer(QGraphicsView):
 
         if event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.ScrollHandDrag)
-
-        elif event.button() == Qt.RightButton:
-            self.is_drawing = True
-            self.shape_start = (scenePos.x(), scenePos.y())
+            self.is_dragging = True
+            print("button pressed")
 
         QGraphicsView.mousePressEvent(self, event)
 
@@ -188,13 +238,11 @@ class QtImageViewer(QGraphicsView):
 
         if event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.NoDrag)
+            self.is_dragging = False
+            print("button released")
 
-        elif event.button() == Qt.RightButton:
-            self.shapes.append(self.shape)
-            self.is_drawing = False
+        QGraphicsView.mouseReleaseEvent(self, event)
 
-            self.shape_start = None
-            self.shape = None
 
 
     def mouseDoubleClickEvent(self, event):        
@@ -240,34 +288,27 @@ class QtImageViewer(QGraphicsView):
             self.zoom_rect = self.mapToScene(self.viewport().rect())
 
 
-    def mouseMoveEvent(self, event):
-        scenePos = self.mapToScene(event.pos())
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Control:
+            self.toggle_selectable()
 
-        if self.is_drawing:
-            if self.shape != None:
-                self.scene.removeItem(self.shape)
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Control:
+            self.toggle_selectable()
 
 
-            if self.shape_type == "line":
-                self.shape = self.scene.addLine(
-                    self.shape_start[0],
-                    self.shape_start[1],
-                    scenePos.x(),
-                    scenePos.y()
-                )
-            elif self.shape_type == "rectangle":
-                self.shape = self.scene.addRect(
-                    self.shape_start[0],
-                    self.shape_start[1],
-                    (scenePos.x() - self.shape_start[0]),
-                    (scenePos.y() - self.shape_start[1])
-                )
-            elif self.shape_type == "ellipse":
-                self.shape = self.scene.addEllipse(
-                    self.shape_start[0],
-                    self.shape_start[1],
-                    (scenePos.x() - self.shape_start[0]),
-                    (scenePos.y() - self.shape_start[1])
-                )
+    
 
-        QGraphicsView.mouseMoveEvent(self, event)
+    # def mouseMoveEvent(self, event):
+    #     if self.is_dragging:
+    #         self.mouseMoveEvent(QMouseEvent(
+    #             type = event.type(),
+    #             localPos = event.position(),
+    #             globalPos = event.globalPos(),
+    #             source = event.source(),
+    #             scenePos = event.scenePosition(),
+    #             button = Qt.MouseButton.LeftButton,
+    #             buttons = event.buttons(),
+    #             modifiers = event.modifiers(),
+    #             device = event.device()
+    #         ))
