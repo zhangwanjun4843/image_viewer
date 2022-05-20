@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
 
 
         # connect the widgets to their respective functions
-        self.ui.imageViewer.file_changed.connect(lambda new_name: self.image_changed(new_name))
+        self.ui.imageViewer.files_changed.connect(lambda imgs: self.files_changed(imgs))
 
         self.ui.left_btn.clicked.connect(lambda: self.ui.imageViewer.step("left"))
         self.ui.right_btn.clicked.connect(lambda: self.ui.imageViewer.step("right"))
@@ -60,11 +60,9 @@ class MainWindow(QMainWindow):
         pixmap = self.ui.imageViewer.export_image()
         QApplication.clipboard().setPixmap(pixmap)
 
-    def image_changed(self, new_name):
-        self.setWindowTitle(f"Viewing \"{new_name}\"")
+    def files_changed(self, images):
+        print(images)
 
-    def debug(self):
-        self.ui.imageViewer.add_debug_thing()
     
 def run():
     app = QApplication(sys.argv)

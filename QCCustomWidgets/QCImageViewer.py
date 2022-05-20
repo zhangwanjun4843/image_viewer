@@ -5,7 +5,7 @@ from qt_core import *
 from .QCImageItem import QCImageItem
 
 class QCImageViewer(QGraphicsView):
-    file_changed = Signal(str)
+    files_changed = Signal(list)
 
     def __init__(self):
         QGraphicsView.__init__(self)
@@ -37,21 +37,25 @@ class QCImageViewer(QGraphicsView):
         self.shape = None
         self.shape_type = None
 
-        self.files = []
-        self.img_path = None
-        self.img_dir = None
-        self.img_name = None
 
-        self.SUPPORTED_FILE_TYPES = [".png", ".jpg"]
+
+        self.images = [] # the image items being displayed in the scene
+
+        self.files = [] # the loadable image files in the currant directory
+
+        self.SUPPORTED_FILE_TYPES = [".png", ".jpg", ".jfif"]
 
 
     def load_image(self, path):
         if os.path.isfile(path):
             #TODO: add checks if the image being loaded is already in the loaded directory
-            self.img_path = path
-            self.img_dir = os.path.dirname(path)
-            self.img_name = os.path.basename(path)
-            self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
+            if len(self.pixmaps) == 0:
+
+                self.files = 
+
+            self.images.append(path)
+            self.files_changed.emit(self.images)
+            # self.files = [f for f in os.listdir(path) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
 
             pixmap = QPixmap(path)
 
@@ -61,12 +65,7 @@ class QCImageViewer(QGraphicsView):
 
             self.pixmaps.append(pixmap_item)
 
-            # removing this causes a werid bug with zooming for the first time, idk why
-            # self.scale(0.95, 0.95)
-            # self.scale(1.05, 1.05)
-            QGraphicsView.mousePressEvent(self, QMouseEvent(
-
-            ))
+            #TODO: fix the weird bug that affects the first zoom/scale step after an image has been loaded
 
 
     def add_image(self, pixmap):
@@ -115,19 +114,22 @@ class QCImageViewer(QGraphicsView):
         return pixmap
 
     def step(self, direction):
-        index = self.files.index(self.img_name)
+        if len(self.pixmaps) == 1:
+            index = self.files.index(self.img_name)
 
-        if direction == "left":
-            if index == 0:
-                return
-            new_img_name = os.path.join(self.img_dir, self.files[index - 1])
+            if direction == "left":
+                if index == 0:
+                    return
+                new_img_name = os.path.join(self.img_dir, self.files[index - 1])
 
-        elif direction == "right":
-            if index + 1 == len(self.files):
-                return
-            new_img_name = os.path.join(self.img_dir, self.files[index + 1])
+            elif direction == "right":
+                if index + 1 == len(self.files):
+                    return
+                new_img_name = os.path.join(self.img_dir, self.files[index + 1])
 
-        self.load_file(new_img_name)
+            QGraphicsScene.removeItem(self.pixmaps[0])
+            self.load_image(new_img_name)
+
 
     def toggle_selectable(self, value):
         for pixmap in self.pixmaps:
@@ -209,11 +211,11 @@ class QCImageViewer(QGraphicsView):
 
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Alt:
+        if event.key() == Qt.Key_Alt and self.pixmaps > 1:
             self.toggle_selectable(True)
             print(self.items_selectable)
 
     def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Alt:
+        if event.key() == Qt.Key_Alt and self.pixmaps > 1:
             self.toggle_selectable(False)
             print(self.items_selectable)
