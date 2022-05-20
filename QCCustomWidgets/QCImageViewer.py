@@ -36,6 +36,8 @@ class QCImageViewer(QGraphicsView):
         self.shape = None
         self.shape_type = None
 
+        self.single_image_mode = False
+
         self.img_dir = None
         self.img_name = None
 
@@ -52,20 +54,22 @@ class QCImageViewer(QGraphicsView):
     def load_image(self, path):
         if os.path.isfile(path):
             #TODO: add checks if the image being loaded is already in the loaded directory
-            if len(self.pixmaps) == 0:
-                self.img_dir = os.path.dirname(path)
-                self.img_name = os.path.basename(path)
-                self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
-
             self.images.append(path)
             self.files_changed.emit(self.images)
 
             pixmap = QPixmap(path)
-
-
             pixmap_item = self.add_image(pixmap)
 
             self.pixmaps.append(pixmap_item)
+            if len(self.pixmaps) == 1:
+                self.single_image_mode = True
+
+                self.img_dir = os.path.dirname(path)
+                self.img_name = os.path.basename(path)
+                self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
+
+            else:
+                self.single_image_mode = False
 
             #TODO: fix the weird bug that affects the first zoom/scale step after an image has been loaded
 
@@ -116,7 +120,7 @@ class QCImageViewer(QGraphicsView):
         return pixmap
 
     def step(self, direction):
-        if len(self.pixmaps) == 1:
+        if self.single_image_mode:
             print(self.files)
             index = self.files.index(self.img_name)
 
@@ -130,7 +134,7 @@ class QCImageViewer(QGraphicsView):
                     return
                 new_img_name = os.path.join(self.img_dir, self.files[index + 1])
 
-            QGraphicsScene.removeItem(self.pixmaps[0])
+            
             self.load_image(new_img_name)
 
 
@@ -215,11 +219,11 @@ class QCImageViewer(QGraphicsView):
 
     def keyPressEvent(self, event):
         print(self.pixmaps)
-        if event.key() == Qt.Key_Alt and len(self.pixmaps) > 1:
+        if event.key() == Qt.Key_Alt and self.single_image_mode:
             self.toggle_selectable(True)
             print(self.items_selectable)
 
     def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Alt and len(self.pixmaps) > 1:
+        if event.key() == Qt.Key_Alt and self.single_image_mode:
             self.toggle_selectable(False)
             print(self.items_selectable)
