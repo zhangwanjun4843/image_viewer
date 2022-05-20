@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 from qt_core import *
 from QCCustomWidgets.QCImageViewer import QCImageViewer
@@ -61,7 +61,10 @@ class MainWindow(QMainWindow):
         QApplication.clipboard().setPixmap(pixmap)
 
     def files_changed(self, images):
-        print(images)
+        if len(images) == 1:
+            self.setWindowTitle(f"Viewing {os.path.basename(images[0])}")
+        else:
+            self.setWindowTitle("Viewing multiple images :)")
 
     
 def run():

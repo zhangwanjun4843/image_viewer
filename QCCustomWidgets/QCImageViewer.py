@@ -2,7 +2,6 @@
 import os
 
 from qt_core import *
-from .QCImageItem import QCImageItem
 
 class QCImageViewer(QGraphicsView):
     files_changed = Signal(list)
@@ -37,31 +36,34 @@ class QCImageViewer(QGraphicsView):
         self.shape = None
         self.shape_type = None
 
+        self.img_dir = None
+        self.img_name = None
 
-
-        self.images = [] # the image items being displayed in the scene
+        self.images = [] # the image files being displayed in the scene
 
         self.files = [] # the loadable image files in the currant directory
 
-        self.SUPPORTED_FILE_TYPES = [".png", ".jpg", ".jfif"]
+        self.SUPPORTED_FILE_TYPES = [".png", ".jpg", ".jfif", ".webp"]
 
+            # self.img_dir = os.path.dirname(file_path)
+            # self.img_name = os.path.basename(file_path)
+            # self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
 
     def load_image(self, path):
         if os.path.isfile(path):
             #TODO: add checks if the image being loaded is already in the loaded directory
             if len(self.pixmaps) == 0:
-
-                self.files = 
+                self.img_dir = os.path.dirname(path)
+                self.img_name = os.path.basename(path)
+                self.files = [f for f in os.listdir(self.img_dir) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
 
             self.images.append(path)
             self.files_changed.emit(self.images)
-            # self.files = [f for f in os.listdir(path) if os.path.splitext(f)[-1] in self.SUPPORTED_FILE_TYPES]
 
             pixmap = QPixmap(path)
 
 
-            pixmap_item = QCImageItem(pixmap)
-            self.add_image(pixmap_item)
+            pixmap_item = self.add_image(pixmap)
 
             self.pixmaps.append(pixmap_item)
 
@@ -69,7 +71,7 @@ class QCImageViewer(QGraphicsView):
 
 
     def add_image(self, pixmap):
-        self.scene.addItem(pixmap)
+        self.scene.addPixmap(pixmap)
         
         self.toggle_selectable(False)
         self.reset_viewer(zoom = True)
@@ -115,6 +117,7 @@ class QCImageViewer(QGraphicsView):
 
     def step(self, direction):
         if len(self.pixmaps) == 1:
+            print(self.files)
             index = self.files.index(self.img_name)
 
             if direction == "left":
@@ -211,11 +214,12 @@ class QCImageViewer(QGraphicsView):
 
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Alt and self.pixmaps > 1:
+        print(self.pixmaps)
+        if event.key() == Qt.Key_Alt and len(self.pixmaps) > 1:
             self.toggle_selectable(True)
             print(self.items_selectable)
 
     def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Alt and self.pixmaps > 1:
+        if event.key() == Qt.Key_Alt and len(self.pixmaps) > 1:
             self.toggle_selectable(False)
             print(self.items_selectable)
