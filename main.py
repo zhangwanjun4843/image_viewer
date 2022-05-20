@@ -1,9 +1,7 @@
-import sys, os
+import sys
 
 from qt_core import *
-
-from QtImageViewer import QtImageViewer
-
+from QCCustomWidgets.QCImageViewer import QCImageViewer
 from qt_material import apply_stylesheet
 
 class MainWindow(QMainWindow):
@@ -12,10 +10,10 @@ class MainWindow(QMainWindow):
 
         # loading ui files
         loader = QUiLoader()
-        self.ui = loader.load("main_ui.ui", None)
+        self.ui = loader.load("ui_files/main.ui", None)
 
         # custom widgets
-        self.ui.imageViewer = QtImageViewer()
+        self.ui.imageViewer = QCImageViewer()
         self.ui.imageViewer.setStyleSheet("border-width: 0px; border-style: solid")
 
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
@@ -38,7 +36,6 @@ class MainWindow(QMainWindow):
         # self.open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
         # self.open_shortcut.activated.connect(self.show_image())
 
-
         # window options
         self.setWindowTitle("Image Viewer")
         self.setCentralWidget(self.ui)
@@ -48,7 +45,7 @@ class MainWindow(QMainWindow):
     def add_image(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
         self.ui.imageViewer.load_image(path)
-        # self.ui.imageViewer.add_debug_thing()
+        self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
 
     def flip_image(self):
         self.ui.imageViewer.flip_image()
@@ -63,15 +60,8 @@ class MainWindow(QMainWindow):
         pixmap = self.ui.imageViewer.export_image()
         QApplication.clipboard().setPixmap(pixmap)
 
-
-
-
-    def line_width_slider(self, value):
-        self.edit_window.label.setText(str(value))        
-
     def image_changed(self, new_name):
         self.setWindowTitle(f"Viewing \"{new_name}\"")
-
 
     def debug(self):
         self.ui.imageViewer.add_debug_thing()
