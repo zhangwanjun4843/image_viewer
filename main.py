@@ -11,6 +11,10 @@ class MainWindow(QMainWindow):
         # loading ui files
         loader = QUiLoader()
         self.ui = loader.load("ui_files/main.ui", None)
+        self.open_menu = loader.load("ui_files/open_menu.ui", None)
+
+        self.toggled_menu = None
+
 
         # custom widgets
         self.ui.imageViewer = QCImageViewer()
@@ -25,10 +29,12 @@ class MainWindow(QMainWindow):
         self.ui.left_btn.clicked.connect(lambda: self.ui.imageViewer.step("left"))
         self.ui.right_btn.clicked.connect(lambda: self.ui.imageViewer.step("right"))
 
-        self.ui.add_btn.clicked.connect(lambda: self.add_image())
+        self.ui.add_btn.clicked.connect(lambda: self.show_open_menu())
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
         self.ui.export_btn.clicked.connect(lambda: self.export_image())
+
+        self.ui.oppacity_slider.valueChanged.connect(lambda value: self.change_opacity(value))
 
         # keyboard shortcuts
         # This: https://learndataanalysis.org/create-and-assign-keyboard-shortcuts-to-your-pyqt-application-pyqt5-tutorial/
@@ -56,6 +62,9 @@ class MainWindow(QMainWindow):
     def render_image(self):
         self.ui.imageViewer.render_image()
 
+    def change_opacity(self, value):
+        self.ui.imageViewer.change_opacity(value * 0.01)
+
     def export_image(self):
         pixmap = self.ui.imageViewer.export_image()
         QApplication.clipboard().setPixmap(pixmap)
@@ -66,6 +75,10 @@ class MainWindow(QMainWindow):
         else:
             self.setWindowTitle("Viewing multiple images :)")
 
+    def show_open_menu(self):
+        # remove all the other menues
+        self.menu_layer.removeWidget(self.toggled_menu)
+        self.menu
     
 def run():
     app = QApplication(sys.argv)
