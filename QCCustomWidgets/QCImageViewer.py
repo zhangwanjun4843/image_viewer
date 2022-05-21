@@ -57,6 +57,8 @@ class QCImageViewer(QGraphicsView):
 
     def load_additional_image(self, path):
         if os.path.isfile(path):
+            if self.single_image_mode:
+                self.single_image_mode = False
             self.images.append(path)
             self.files_changed.emit(self.images)
 

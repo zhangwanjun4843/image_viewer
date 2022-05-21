@@ -11,7 +11,13 @@ class MainWindow(QMainWindow):
         # loading ui files
         loader = QUiLoader()
         self.ui = loader.load("ui_files/main.ui", None)
+
         self.open_menu = loader.load("ui_files/open_menu.ui", None)
+        self.open_menu.hide()
+
+
+        self.ui.menu_layout.addWidget(self.open_menu)
+
 
         self.toggled_menu = None
 
@@ -36,6 +42,12 @@ class MainWindow(QMainWindow):
 
         self.ui.oppacity_slider.valueChanged.connect(lambda value: self.change_opacity(value))
 
+        self.open_menu.add_image_btn.clicked.connect(lambda: self.add_additional_image())
+        self.open_menu.single_image_btn.clicked.connect(lambda: self.show_single_image())
+
+
+
+
         # keyboard shortcuts
         # This: https://learndataanalysis.org/create-and-assign-keyboard-shortcuts-to-your-pyqt-application-pyqt5-tutorial/
         # article does a great job at showing how keyboard shortcuts work in qt.
@@ -48,10 +60,16 @@ class MainWindow(QMainWindow):
 
         self.count = 0
 
-    def add_image(self):
+    def add_additional_image(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
-        self.ui.imageViewer.load_image(path)
+        self.ui.imageViewer.load_additional_image(path)
         self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
+
+    def show_single_image(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
+        self.ui.imageViewer.load_single_image(path)
+        self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
+
 
     def flip_image(self):
         self.ui.imageViewer.flip_image()
@@ -77,9 +95,19 @@ class MainWindow(QMainWindow):
 
     def show_open_menu(self):
         # remove all the other menues
-        self.menu_layer.removeWidget(self.toggled_menu)
-        self.menu
-    
+        try:
+            self.toggled_menu.hide()
+        except AttributeError as e:
+            print("You shall not pass!")
+            pass # fly, you fools
+
+        if self.toggled_menu != self.open_menu:
+            self.open_menu.show()
+            self.toggled_menu = self.open_menu
+        else:
+            self.toggled_menu = None
+        
+
 def run():
     app = QApplication(sys.argv)
     window = MainWindow()
