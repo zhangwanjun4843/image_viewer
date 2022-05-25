@@ -3,8 +3,13 @@ import os
 
 from qt_core import *
 
+
+def listdir_fullpath(d):
+    return [os.path.join(d, f) for f in os.listdir(d)]
+
 class QCImageViewer(QGraphicsView):
     files_changed = Signal(list)
+    state_changed = Signal(str)
 
     def __init__(self):
         QGraphicsView.__init__(self)
@@ -13,13 +18,15 @@ class QCImageViewer(QGraphicsView):
         self.setScene(self.scene)
         self.setSceneRect(-5000, -5000, 10000, 10000)
 
+        # self.setBackgroundBrush(QBrush(QColor("#202225"), Qt.SolidPattern))
+
         self.pixmaps = []
 
         self.aspectRatioMode = Qt.KeepAspectRatio
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.single_image_mode = False
+        self.single_image_mode = True
 
         self.items_selectable = False
 
@@ -32,8 +39,12 @@ class QCImageViewer(QGraphicsView):
         self.scale_factor = 1
         self.resize_lock = False
 
-        self.images = [] # the image files being displayed in the scene
-        self.files = [] # the loadable image files in the currant directory
+
+
+        self.img_paths_displayed = [] # the image files being displayed in the scene
+        self.img_paths_dir = [] # the loadable image files in the currant directory
+        self.img_dirname = None
+        self.img_filename = None
 
         self.SUPPORTED_FILE_TYPES = [".png", ".jpg", ".jfif", ".webp"]
 
@@ -44,23 +55,37 @@ class QCImageViewer(QGraphicsView):
                 self.scene.removeItem(pixmap)
 
             self.pixmaps = []
-            self.images = []
+            self.img_paths_displayed = []
 
             pixmap = QPixmap(path)
             pixmap_item = self.add_image(pixmap)
 
             self.pixmaps.append(pixmap_item)
-            self.images.append(path)
 
+            self.img_dirname = os.path.dirname(path)
+            self.img_filename = os.path.basename(path)
+            self.img_paths_displayed.append(os.path.join(self.img_dirname, self.img_filename))
+            self.img_paths_dir = []
+            # thie following 4 lines could be a list comprehension, thank me later
+            for filename in os.listdir(self.img_dirname):
+                abs_path = os.path.join(self.img_dirname, filename)
+                if os.path.splitext(abs_path)[-1] in self.SUPPORTED_FILE_TYPES:
+                    self.img_paths_dir.append(abs_path)
+
+            self.files_changed.emit(self.img_paths_displayed)
             self.single_image_mode = True
+            self.state_changed.emit("single")
 
 
     def load_additional_image(self, path):
         if os.path.isfile(path):
             if self.single_image_mode:
                 self.single_image_mode = False
-            self.images.append(path)
-            self.files_changed.emit(self.images)
+                self.state_changed.emit("multiple")
+
+            self.img_paths_displayed.append(path)
+
+            self.files_changed.emit(self.img_paths_displayed)
 
             pixmap = QPixmap(path)
             pixmap_item = self.add_image(pixmap)
@@ -116,21 +141,20 @@ class QCImageViewer(QGraphicsView):
         return pixmap
 
     def step(self, direction):
-        print(self.files)
-        index = self.files.index(self.img_name)
+        if self.single_image_mode:
+            index = self.img_paths_dir.index(self.img_paths_displayed[0])
 
-        if direction == "left":
-            if index == 0:
-                return
-            new_img_name = os.path.join(self.img_dir, self.files[index - 1])
+            if direction == "left":
+                if index == 0:
+                    return
+                new_img_path = self.img_paths_dir[index - 1]
 
-        elif direction == "right":
-            if index + 1 == len(self.files):
-                return
-            new_img_name = os.path.join(self.img_dir, self.files[index + 1])
+            elif direction == "right":
+                if index + 1 == len(self.img_paths_dir):
+                    return
+                new_img_path = self.img_paths_dir[index + 1]
 
-        
-        self.load_image(new_img_name)
+            self.load_single_image(new_img_path)
 
 
     def toggle_selectable(self, value):
@@ -140,9 +164,11 @@ class QCImageViewer(QGraphicsView):
         self.items_selectable = value
 
     def change_opacity(self, value):
-        if len(self.scene.selectedItems()) == 1:
+        if self.single_image_mode:
+            self.pixmaps[0].setOpacity(value)
+        elif len(self.scene.selectedItems()) == 1:
             self.scene.selectedItems()[0].setOpacity(value)
-
+        
 
     # Events
     def resizeEvent(self, event):
@@ -159,7 +185,7 @@ class QCImageViewer(QGraphicsView):
 
         QGraphicsView.mousePressEvent(self, event)
 
-        if self.items_selectable:
+        if self.items_selectable and len(self.scene.selectedItems()) > 0:
             for item in self.pixmaps:
                 item.setZValue(0)
             self.scene.selectedItems()[0].setZValue(1)
@@ -203,7 +229,7 @@ class QCImageViewer(QGraphicsView):
                     self.rotation -= self.rotation_step
 
         else:            
-            self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse) # AnchorUnderMouse # AnchorViewCenter
+            self.setTransformationAnchor(QGraphicsView.AnchorViewCenter) # AnchorUnderMouse # AnchorViewCenter
 
             scale_factor = 1.05
             if event.angleDelta().y() > 0:
@@ -218,7 +244,7 @@ class QCImageViewer(QGraphicsView):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Alt and not self.single_image_mode:
-            self.toggle_selectable(True)
+            self.toggle_selectable(not self.items_selectable)
 
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Alt and not self.single_image_mode:

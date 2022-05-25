@@ -12,16 +12,6 @@ class MainWindow(QMainWindow):
         loader = QUiLoader()
         self.ui = loader.load("ui_files/main.ui", None)
 
-        self.open_menu = loader.load("ui_files/open_menu.ui", None)
-        self.open_menu.hide()
-
-
-        self.ui.menu_layout.addWidget(self.open_menu)
-
-
-        self.toggled_menu = None
-
-
         # custom widgets
         self.ui.imageViewer = QCImageViewer()
         self.ui.imageViewer.setStyleSheet("border-width: 0px; border-style: solid")
@@ -29,24 +19,30 @@ class MainWindow(QMainWindow):
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
 
 
+        self.ui.left_btn.hide()
+        self.ui.right_btn.hide()
+
         # connect the widgets to their respective functions
         self.ui.imageViewer.files_changed.connect(lambda imgs: self.files_changed(imgs))
+        self.ui.imageViewer.state_changed.connect(lambda state: self.state_changed(state))
 
         self.ui.left_btn.clicked.connect(lambda: self.ui.imageViewer.step("left"))
         self.ui.right_btn.clicked.connect(lambda: self.ui.imageViewer.step("right"))
 
-        self.ui.add_btn.clicked.connect(lambda: self.show_open_menu())
+        self.open_image_menu = QMenu()
+        self.show_single_image_action = self.open_image_menu.addAction("Open single image", self.show_single_image)
+        self.add_additional_image_action = self.open_image_menu.addAction("Add additional image", self.add_additional_image)
+        self.add_additional_image_action.setDisabled(True)
+        self.ui.add_btn.setMenu(self.open_image_menu)
+
         self.ui.flip_btn.clicked.connect(lambda: self.flip_image())
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
         self.ui.export_btn.clicked.connect(lambda: self.export_image())
 
-        self.ui.oppacity_slider.valueChanged.connect(lambda value: self.change_opacity(value))
+        # self.ui.oppacity_slider.valueChanged.connect(lambda value: self.change_opacity(value))
 
-        self.open_menu.add_image_btn.clicked.connect(lambda: self.add_additional_image())
-        self.open_menu.single_image_btn.clicked.connect(lambda: self.show_single_image())
-
-
-
+        # self.open_menu.add_image_btn.clicked.connect(lambda: self.add_additional_image())
+        # self.open_menu.single_image_btn.clicked.connect(lambda: self.show_single_image())
 
         # keyboard shortcuts
         # This: https://learndataanalysis.org/create-and-assign-keyboard-shortcuts-to-your-pyqt-application-pyqt5-tutorial/
@@ -57,31 +53,28 @@ class MainWindow(QMainWindow):
         # window options
         self.setWindowTitle("Image Viewer")
         self.setCentralWidget(self.ui)
-
         self.count = 0
+
 
     def add_additional_image(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
         self.ui.imageViewer.load_additional_image(path)
+        
         self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
 
     def show_single_image(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
         self.ui.imageViewer.load_single_image(path)
-        self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
 
+        self.ui.right_btn.setChecked(False)
+        self.ui.left_btn.setChecked(False)
+        self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
 
     def flip_image(self):
         self.ui.imageViewer.flip_image()
 
     def rotate_image(self):
         self.ui.imageViewer.toggle_rotating()
-
-    def render_image(self):
-        self.ui.imageViewer.render_image()
-
-    def change_opacity(self, value):
-        self.ui.imageViewer.change_opacity(value * 0.01)
 
     def export_image(self):
         pixmap = self.ui.imageViewer.export_image()
@@ -93,20 +86,20 @@ class MainWindow(QMainWindow):
         else:
             self.setWindowTitle("Viewing multiple images :)")
 
-    def show_open_menu(self):
-        # remove all the other menues
-        try:
-            self.toggled_menu.hide()
-        except AttributeError as e:
-            print("You shall not pass!")
-            pass # fly, you fools
+    def state_changed(self, state):
+        print(state)
+        if state == "single":
+            self.ui.left_btn.show()
+            self.ui.right_btn.show()
+            self.add_additional_image_action.setDisabled(False)
+        elif state == "multiple":
+            self.ui.left_btn.hide()
+            self.ui.right_btn.hide()
+            self.add_additional_image_action.setDisabled(False)
 
-        if self.toggled_menu != self.open_menu:
-            self.open_menu.show()
-            self.toggled_menu = self.open_menu
-        else:
-            self.toggled_menu = None
-        
+
+        self.ui.add_btn.setChecked(False)
+
 
 def run():
     app = QApplication(sys.argv)
