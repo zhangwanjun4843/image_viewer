@@ -1,2 +1,4 @@
-self.open_menu.add_image_btn.clicked.connect(lambda: self.add_additional_image())
-        # self.open_menu.single_image_btn.clicked.connect(lambda: self.show_single_image())
+        # if state == "null":
+        #     self.ui.left_btn.hide()
+        #     self.ui.right_btn.hide()
+        #     self.add_additional_image_action.setDisabled(False)

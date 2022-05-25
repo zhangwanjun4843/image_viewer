@@ -66,11 +66,14 @@ class QCImageViewer(QGraphicsView):
             self.img_filename = os.path.basename(path)
             self.img_paths_displayed.append(os.path.join(self.img_dirname, self.img_filename))
             self.img_paths_dir = []
+            
             # thie following 4 lines could be a list comprehension, thank me later
             for filename in os.listdir(self.img_dirname):
                 abs_path = os.path.join(self.img_dirname, filename)
                 if os.path.splitext(abs_path)[-1] in self.SUPPORTED_FILE_TYPES:
                     self.img_paths_dir.append(abs_path)
+
+            self.reset_viewer(zoom = True, rotation = True, flip = True)
 
             self.files_changed.emit(self.img_paths_displayed)
             self.single_image_mode = True
@@ -89,6 +92,8 @@ class QCImageViewer(QGraphicsView):
 
             pixmap = QPixmap(path)
             pixmap_item = self.add_image(pixmap)
+
+            self.reset_viewer(zoom = True, rotation = True, flip = True)
 
             self.pixmaps.append(pixmap_item)
 
@@ -245,7 +250,11 @@ class QCImageViewer(QGraphicsView):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Alt and not self.single_image_mode:
             self.toggle_selectable(not self.items_selectable)
-
+        elif event.key() == Qt.Key_Delete and self.scene.selectedItems() != 0:
+            for item in self.scene.selectedItems():
+                self.scene.removeItem(item)
+                self.pixmaps.remove(item)
+                
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Alt and not self.single_image_mode:
             self.toggle_selectable(False)
