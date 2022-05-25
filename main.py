@@ -12,17 +12,17 @@ class MainWindow(QMainWindow):
         loader = QUiLoader()
         self.ui = loader.load("ui_files/main.ui", None)
 
-        # custom widgets
+        # image viewer widget
         self.ui.imageViewer = QCImageViewer()
         self.ui.imageViewer.setStyleSheet("border-width: 0px; border-style: solid")
 
         self.ui.verticalLayout_2.addWidget(self.ui.imageViewer)
 
-
+        # hide the buttons for stepping left and right
         self.ui.left_btn.hide()
         self.ui.right_btn.hide()
 
-        # connect the widgets to their respective functions
+        # connect various widgets to their respective functions
         self.ui.imageViewer.files_changed.connect(lambda imgs: self.files_changed(imgs))
         self.ui.imageViewer.state_changed.connect(lambda state: self.state_changed(state))
 
@@ -39,16 +39,6 @@ class MainWindow(QMainWindow):
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
         self.ui.export_btn.clicked.connect(lambda: self.export_image())
 
-        # self.ui.oppacity_slider.valueChanged.connect(lambda value: self.change_opacity(value))
-
-        # self.open_menu.add_image_btn.clicked.connect(lambda: self.add_additional_image())
-        # self.open_menu.single_image_btn.clicked.connect(lambda: self.show_single_image())
-
-        # keyboard shortcuts
-        # This: https://learndataanalysis.org/create-and-assign-keyboard-shortcuts-to-your-pyqt-application-pyqt5-tutorial/
-        # article does a great job at showing how keyboard shortcuts work in qt.
-        # self.open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
-        # self.open_shortcut.activated.connect(self.show_image())
 
         # window options
         self.setWindowTitle("Image Viewer")

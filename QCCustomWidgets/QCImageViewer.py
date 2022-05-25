@@ -4,9 +4,6 @@ import os
 from qt_core import *
 
 
-def listdir_fullpath(d):
-    return [os.path.join(d, f) for f in os.listdir(d)]
-
 class QCImageViewer(QGraphicsView):
     files_changed = Signal(list)
     state_changed = Signal(str)
@@ -254,7 +251,7 @@ class QCImageViewer(QGraphicsView):
             for item in self.scene.selectedItems():
                 self.scene.removeItem(item)
                 self.pixmaps.remove(item)
-                
+
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Alt and not self.single_image_mode:
             self.toggle_selectable(False)
