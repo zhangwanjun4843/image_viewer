@@ -1,6 +1,6 @@
 # PySide6 Image Viewer
 
-This is a small image viewer that aims to be good looking and provide basic funtionality. It is entirely made using PySide6. Feel free to use this in your own projects, as an example project or however you like.
+This is a small image viewer that aims to be good looking and provide basic funtionality. It is entirely made using PySide6. Feel free to use this however you would like, as long as you credit me as the original creator
 
 ![image](https://user-images.githubusercontent.com/71030751/170262545-2d710d87-8801-4272-aef2-a0b714ebe8a9.png)
 ![image](https://user-images.githubusercontent.com/71030751/170262661-d224ccd3-ccd0-4aea-8f8d-064cd9f5acfd.png)
