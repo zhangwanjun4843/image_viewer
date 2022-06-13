@@ -9,6 +9,14 @@ This is a small image viewer that aims to be good looking and provide basic funt
 # Usage
 
 ## Installation
+**If you want to use the image viewer as an actually program, 
+head over to the [releases page](https://github.com/MergenStudios/image_viewer/releases) and download
+the installer!
+**
+
+If you want to tinker with the source code,
+follow the steps below:
+
 You need to have python 3.6+ installed.
 Install the required packages with
 ```
@@ -23,6 +31,21 @@ Navigate the the folder and run main.py
 ```
 python main.py
 ```
+
+If you want to build the installer,
+you have to install [Install Forge](https://installforge.net/).
+You will also have to install Pyinstaller with
+```
+pip install Pyinstaller
+```
+Run pyinstaller with
+```
+pyinstaller main.spec
+```
+Open the file install_forge_project.ifp inside install forge, and tinker
+with the settings however you would like. 
+If you want to learn how exactly all of that works I highly recommend
+you check out [this](https://www.pythonguis.com/tutorials/packaging-pyqt5-pyside2-applications-windows-pyinstaller/) tutorial.
 
 ## Keyboard Shortcuts, I guess
 There are some keyboard shortcuts. I'm working on making these more intuitive, but for now they're here
