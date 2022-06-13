@@ -1,4 +1,4 @@
-# https://github.com/marcel-goldschen-ohm/PyQtImageViewer
+# https://github.c om/marcel-goldschen-ohm/PyQtImageViewer
 import os
 
 from qt_core import *
@@ -111,12 +111,7 @@ class QCImageViewer(QGraphicsView):
     def toggle_rotating(self):
         self.is_rotating = not self.is_rotating
         
-    def reset_viewer(self, rotation = False, zoom = False, flip = False, shapes = False):
-        if shapes:
-            for line in self.shapes:
-                self.scene.removeItem(line)
-            self.shapes = []
-      
+    def reset_viewer(self, rotation = False, zoom = False, flip = False):
         if flip:
             if self.is_flipped:
                     self.flip_image()

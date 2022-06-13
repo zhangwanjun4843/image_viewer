@@ -5,12 +5,14 @@ from QCCustomWidgets.QCImageViewer import QCImageViewer
 from qt_material import apply_stylesheet
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, img_path = None):
         super().__init__()
+        
+        basedir = os.path.dirname(__file__)
 
         # loading ui files
         loader = QUiLoader()
-        self.ui = loader.load("ui_files/main.ui", None)
+        self.ui = loader.load(os.path.join(basedir, "ui_files/main.ui"), None)
 
         # image viewer widget
         self.ui.imageViewer = QCImageViewer()
@@ -39,6 +41,8 @@ class MainWindow(QMainWindow):
         self.ui.rotate_btn.clicked.connect(lambda: self.rotate_image())
         self.ui.export_btn.clicked.connect(lambda: self.export_image())
 
+        if img_path is not None:
+            self.add_additional_image(img_path)
 
         # window options
         self.setWindowTitle("Image Viewer")
@@ -46,14 +50,16 @@ class MainWindow(QMainWindow):
         self.count = 0
 
 
-    def add_additional_image(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
+    def add_additional_image(self, path = None):
+        if path is None:
+            path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
         self.ui.imageViewer.load_additional_image(path)
         
         self.ui.imageViewer.setFocus(Qt.OtherFocusReason)
 
-    def show_single_image(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
+    def show_single_image(self, path = None):
+        if path is None:
+            path, _ = QFileDialog.getOpenFileName(self, "Open image file:")
         self.ui.imageViewer.load_single_image(path)
 
         self.ui.right_btn.setChecked(False)
@@ -93,7 +99,11 @@ class MainWindow(QMainWindow):
 
 def run():
     app = QApplication(sys.argv)
-    window = MainWindow()
+    
+    if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
+        window = MainWindow(sys.argv[1])
+    else:
+        window = MainWindow()
 
     apply_stylesheet(app, theme='dark_teal.xml')
 

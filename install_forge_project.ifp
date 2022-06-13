@@ -1,0 +1,431 @@
+﻿
+[Header]
+ProjectFileVersion = 1.1
+[General]
+Program name = image_viewer
+Program version = 69.420
+Windows 2000 = 0
+Windows XP = 0
+Windows Server 2003 = 0
+Windows Vista = 0
+Windows Server 2008 = 0
+Windows 7 = 0
+Windows 8 = 0
+Windows 10 = 1
+Windows Server 2016 = 0
+DoNotCheckOS = 0
+Company name = MergenStudios
+Website = https://
+SFA = 0
+DFA = 0
+Comp = 1
+[Graphics]
+Wizard image = <main>
+Header image = <main>
+Show Label = 1
+VisualStylesEnabled = 1
+[Files]
+Installation path = <ProgramFiles>\<Company>\<AppName>\
+Autcip = 1
+[Uninstall]
+Vwau = 1
+Website = https://www.youtube.com/watch?v=dQw4w9WgXcQ
+Include uninstaller = 1
+Uninstaller filename = Uninstall
+UseCustomDisplayIcon = 0
+CustomDisplayIcon = <InstallPath>\
+[Licence]
+Licence dialog = 0
+[Finish]
+Sart program = 0
+Reboot computer = 0
+Program = <InstallPath>\
+ProgramArguments = 
+[Shortcuts]
+Allowtc = 0
+Shortcut path = <Company>\<AppName>\
+[Serialoptions]
+Allows = 0
+Number = 1000
+Mask = #####-#####-#####-#####
+[SplashScreen]
+Image = 
+Sound = 
+Time = 2
+PlaySound = 0
+Allow = 0
+[Build]
+File = F:\Programming\python\image_viewer\installer.exe
+SetupIconPath = ..\icons\ancient.ico
+UninstallIconPath = ..\icons\ancient.ico
+CompressionMethod = 0
+CompressionLevel = 0
+[Updater]
+Allow = 0
+1 = <AppName>
+2 = <AppVersion>
+3 = http://
+4 = http://
+5 = http://
+6 = Update
+Language = 0
+RunProg = 
+RunProgs = 0
+Execdlls = 0
+[Languages]
+[Files/Dirs]
+F:\Programming\python\image_viewer\dist\main\PySide6
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\QCCustomWidgets
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\qt_material
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\shiboken2
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\shiboken6
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\ui_files
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\_asyncio.pyd
+59.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_bz2.pyd
+78.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_ctypes.pyd
+116.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_decimal.pyd
+244.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_elementtree.pyd
+119.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_hashlib.pyd
+58.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_lzma.pyd
+150.4 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_multiprocessing.pyd
+29.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_overlapped.pyd
+44.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_queue.pyd
+26.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_socket.pyd
+73.4 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\_ssl.pyd
+152.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-console-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-datetime-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-debug-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-errorhandling-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-file-l1-1-0.dll
+22.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-file-l1-2-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-file-l2-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-handle-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-heap-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-interlocked-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-libraryloader-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-localization-l1-2-0.dll
+21.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-memory-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-namedpipe-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-processenvironment-l1-1-0.dll
+20.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-processthreads-l1-1-0.dll
+21.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-processthreads-l1-1-1.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-profile-l1-1-0.dll
+18.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-rtlsupport-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-string-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-synch-l1-1-0.dll
+21.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-synch-l1-2-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-sysinfo-l1-1-0.dll
+20.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-timezone-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-util-l1-1-0.dll
+19.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-winrt-l1-1-0.dll
+19.2 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-core-winrt-string-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-conio-l1-1-0.dll
+20.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-convert-l1-1-0.dll
+23.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-environment-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-filesystem-l1-1-0.dll
+21.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-heap-l1-1-0.dll
+20.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-locale-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-math-l1-1-0.dll
+28.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-process-l1-1-0.dll
+20.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-runtime-l1-1-0.dll
+23.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-stdio-l1-1-0.dll
+25.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-string-l1-1-0.dll
+25.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-time-l1-1-0.dll
+21.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\api-ms-win-crt-utility-l1-1-0.dll
+19.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\base_library.zip
+812.1 KB
+zip
+F:\Programming\python\image_viewer\dist\main\d3dcompiler_47.dll
+4.3 MB
+dll
+F:\Programming\python\image_viewer\dist\main\image_viewer.exe
+2.3 MB
+exe
+F:\Programming\python\image_viewer\dist\main\libcrypto-1_1.dll
+3.3 MB
+dll
+F:\Programming\python\image_viewer\dist\main\libEGL.dll
+29.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\libffi-7.dll
+32 KB
+dll
+F:\Programming\python\image_viewer\dist\main\libGLESv2.dll
+3.2 MB
+dll
+F:\Programming\python\image_viewer\dist\main\libssl-1_1.dll
+681.7 KB
+dll
+F:\Programming\python\image_viewer\dist\main\MSVCP140.dll
+552.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\MSVCP140_1.dll
+30.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\MSVCP140_2.dll
+181.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\opengl32sw.dll
+20 MB
+dll
+F:\Programming\python\image_viewer\dist\main\pyexpat.pyd
+187.9 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\pyside2.abi3.dll
+158.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\pyside6.abi3.dll
+197.9 KB
+dll
+F:\Programming\python\image_viewer\dist\main\python3.dll
+60.9 KB
+dll
+F:\Programming\python\image_viewer\dist\main\python310.dll
+4.2 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Core.dll
+5.7 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5DBus.dll
+431.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Gui.dll
+6.7 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Network.dll
+1.3 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Pdf.dll
+4.3 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Qml.dll
+3.4 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5QmlModels.dll
+433.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Quick.dll
+4 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Svg.dll
+327.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5VirtualKeyboard.dll
+2 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5WebSockets.dll
+150.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Widgets.dll
+5.2 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt5Xml.dll
+213.3 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Core.dll
+5.4 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Gui.dll
+7.1 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Network.dll
+1.4 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6OpenGL.dll
+1.8 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6OpenGLWidgets.dll
+54.9 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Qml.dll
+4.1 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6QmlModels.dll
+640.9 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Quick.dll
+4.7 MB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Svg.dll
+352.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6UiTools.dll
+626.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6VirtualKeyboard.dll
+921.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\Qt6Widgets.dll
+5.7 MB
+dll
+F:\Programming\python\image_viewer\dist\main\select.pyd
+25.4 KB
+pyd
+F:\Programming\python\image_viewer\dist\main\shiboken2.abi3.dll
+249.8 KB
+dll
+F:\Programming\python\image_viewer\dist\main\shiboken6.abi3.dll
+282.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\ucrtbase.dll
+1020.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\unicodedata.pyd
+1.1 MB
+pyd
+F:\Programming\python\image_viewer\dist\main\VCRUNTIME140.dll
+94.9 KB
+dll
+F:\Programming\python\image_viewer\dist\main\VCRUNTIME140_1.dll
+36.4 KB
+dll
+F:\Programming\python\image_viewer\dist\main\markupsafe
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\PyQt5
+N/A
+[Folder]
+F:\Programming\python\image_viewer\dist\main\PySide2
+N/A
+[Folder]
+[Licence_Begin]
+118
+{\rtf1\ansi\ansicpg1252\deff0\deflang1031{\fonttbl{\f0\fnil\fcharset0 Arial;}}
+\viewkind4\uc1\pard\cf0\fs20\par
+}
+ [Licence_End]
+[Registry]
+[Variables]
+[SCs]
+Desktop
+image_viewer
+<InstallPath>\image_viewer.exe
+
+
+0
+Startmenu
+image_viewer
+<InstallPath>\image_viewer.exe
+
+
+0
+[IFP_End]
+[Serials]
+[Serials_End]
+[Commands]
